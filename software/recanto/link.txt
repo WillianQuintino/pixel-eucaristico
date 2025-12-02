@@ -1,0 +1,15 @@
+Código: https://github.com/Pixel-Eucaristico/recanto-app/tree/next-js
+Site: https://recanto-app.vercel.app
+
+Tecnologia de ponta e Propósito Social podem andar juntos? Criei um ecossistema Open Source para comunidades católicas. 🚀
+
+Muitas vezes, comunidades, paróquias e projetos sociais sofrem com a gestão digital. Ou as ferramentas são muito caras, ou são complexas demais, ou acabam dependendo de planilhas desconectadas.
+Decidi usar a tecnologia para resolver isso.
+Estou desenvolvendo o Recanto App, uma plataforma completa e Open Source para gestão de comunidades. O projeto piloto está sendo feito para o Recanto do Amor Misericordioso, mas a arquitetura foi pensada para servir a qualquer comunidade.
+O que não é apenas um site, é um Sistema de Gestão (CMS) completo que construí do zero.
+Nos prints abaixo, vocês podem ver o que já está rodando em produção:
+✅ Page Builder Visual: Um sistema "arrasta e solta" onde administradores não-técnicos podem criar seções (Hero, Missão, Eventos) facilmente. ✅ Gestão de Menus Dinâmica: Controle total da navegação e ícones sem tocar em uma linha de código. ✅ Personalização de Temas: Suporte nativo a Dark/Light mode e cores da identidade visual da comunidade. ✅ Foco na Experiência: Interface limpa e moderna feita com Next.js, Tailwind e React.
+O objetivo agora é expandir para incluir gestão de membros, cursos e áreas de comunidade.
+💻 O projeto é 100% Open Source. Se você é dev e quer contribuir com um projeto de impacto real, ou se conhece uma comunidade que se beneficiaria dessa ferramenta, confira o repositório!
+O link para o código está no primeiro comentário. 👇
+hashtag#OpenSource hashtag#TechForGood hashtag#NextJS hashtag#React hashtag#WebDevelopment hashtag#ComunidadeCatolica hashtag#SoftwareEngineering

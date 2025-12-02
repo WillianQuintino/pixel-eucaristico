@@ -1,0 +1,4 @@
+Código: https://github.com/Pixel-Eucaristico/mass-diaria
+Site: https://mass-diaria.vercel.app
+
+Projeto para que as possoas de forma comunitariamente possam agendar e participar das missas diarias e futamente atendimento com o padre.

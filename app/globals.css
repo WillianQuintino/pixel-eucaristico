@@ -1,0 +1,86 @@
+@import "tailwindcss";
+@plugin "daisyui";
+
+@theme {
+  --font-pixel: "Press Start 2P", system-ui, sans-serif;
+}
+
+/* Custom Themes based on Logos */
+/* Landing: Software & Games (Mixed/Neutral) */
+@plugin "daisyui/theme" {
+  name: "theme-landing";
+  default: true;
+  --color-base-100: oklch(98% 0 0);
+  --color-base-200: oklch(95% 0 0);
+  --color-base-300: oklch(90% 0 0);
+  --color-primary: oklch(65% 0.2 290); /* Purple/Blue mix */
+  --color-secondary: oklch(70% 0.2 150); /* Green */
+  --color-accent: oklch(75% 0.2 50); /* Gold/Orange */
+  --color-neutral: oklch(20% 0.02 290);
+  --radius-selector: 0;
+  --radius-field: 0;
+  --radius-box: 0;
+  --radius-btn: 0;
+}
+
+/* Games: Fun/Vibrant */
+@plugin "daisyui/theme" {
+  name: "theme-games";
+  --color-base-100: oklch(95% 0.05 240); /* Light Blue tint */
+  --color-primary: oklch(60% 0.2 250); /* Blue */
+  --color-secondary: oklch(70% 0.2 320); /* Pink/Magenta */
+  --color-accent: oklch(80% 0.2 90); /* Yellow */
+  --radius-selector: 0;
+  --radius-field: 0;
+  --radius-box: 0;
+  --radius-btn: 0;
+}
+
+/* Software: Clean/Tech */
+@plugin "daisyui/theme" {
+  name: "theme-software";
+  --color-base-100: oklch(95% 0.02 200); /* Cool Gray */
+  --color-primary: oklch(55% 0.2 200); /* Cyan/Teal */
+  --color-secondary: oklch(65% 0.2 280); /* Indigo */
+  --color-accent: oklch(75% 0.15 30); /* Orange */
+  --radius-selector: 0;
+  --radius-field: 0;
+  --radius-box: 0;
+  --radius-btn: 0;
+}
+
+:root {
+  --background: var(--color-base-100);
+  --foreground: var(--color-base-content);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: var(--color-base-100);
+    --foreground: var(--color-base-content);
+  }
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-pixel);
+}
+
+/* Custom 8-bit Scrollbar */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: #2e2e2e;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #555;
+  border: 2px solid #2e2e2e;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #777;
+}

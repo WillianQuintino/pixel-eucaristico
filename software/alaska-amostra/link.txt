@@ -1,0 +1,4 @@
+Código: https://github.com/Pixel-Eucaristico/alaska
+Site: https://alaska-sigma.vercel.app
+
+Site de amostra do projeto Alaska para o cliente verificar a funcionalidade do projeto e a proposta de preço.
