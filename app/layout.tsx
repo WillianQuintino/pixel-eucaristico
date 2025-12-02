@@ -32,7 +32,7 @@ export default function RootLayout({
           <div className="grid grid-flow-col gap-4">
             <a href="/games" className="link link-hover">Games</a>
             <a href="/software" className="link link-hover">Software</a>
-            <a href="/curriculum" className="link link-hover">Sobre / Curriculum</a>
+            <a href="/about" className="link link-hover">Sobre Nós</a>
           </div>
           <div>
             <div className="grid grid-flow-col gap-4">

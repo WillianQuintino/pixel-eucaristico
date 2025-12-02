@@ -29,7 +29,7 @@ export default function Navbar() {
             <li><Link href="/">Home</Link></li>
             <li><Link href="/games">Games</Link></li>
             <li><Link href="/software">Software</Link></li>
-            <li><Link href="/curriculum">Curriculum</Link></li>
+            <li><Link href="/about">Sobre</Link></li>
           </ul>
         </div>
         <Link href="/" className="btn btn-ghost text-xl font-bold tracking-tighter">Pixel Eucarístico</Link>
@@ -39,7 +39,7 @@ export default function Navbar() {
           <li><Link href="/" className="hover:bg-primary hover:text-primary-content border-2 border-transparent hover:border-base-content transition-all rounded-none">Home</Link></li>
           <li><Link href="/games" className="hover:bg-primary hover:text-primary-content border-2 border-transparent hover:border-base-content transition-all rounded-none">Games</Link></li>
           <li><Link href="/software" className="hover:bg-primary hover:text-primary-content border-2 border-transparent hover:border-base-content transition-all rounded-none">Software</Link></li>
-          <li><Link href="/curriculum" className="hover:bg-primary hover:text-primary-content border-2 border-transparent hover:border-base-content transition-all rounded-none">Curriculum</Link></li>
+          <li><Link href="/about" className="hover:bg-primary hover:text-primary-content border-2 border-transparent hover:border-base-content transition-all rounded-none">Sobre</Link></li>
         </ul>
       </div>
       <div className="navbar-end flex items-center gap-2">

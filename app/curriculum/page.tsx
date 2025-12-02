@@ -11,20 +11,6 @@ export default function Curriculum() {
 
       {/* PDF Viewer / Download Section */}
       <div className="card bg-base-100 border-4 border-base-content shadow-[8px_8px_0_0_currentColor] rounded-none p-8 text-base-content">
-        <div className="mb-12 text-left bg-base-200 p-6 border-l-4 border-primary shadow-sm">
-            <h2 className="text-2xl font-bold mb-4 text-primary">Nossa Inspiração</h2>
-            <p className="mb-4 text-lg leading-relaxed">
-                A <strong>Pixel Eucarístico</strong> nasceu de uma inspiração em oração diante do Santíssimo Sacramento. 
-                Assim como <strong>São Maximiliano Kolbe</strong> transformou os meios de comunicação de sua época (jornais e revistas) 
-                em poderosas ferramentas de evangelização, sentimos o chamado para fazer o mesmo com a mídia de hoje.
-            </p>
-            <p className="text-lg leading-relaxed">
-                Em conversa com minha irmã, a confirmação veio através do exemplo do <strong>Beato Carlo Acutis</strong>. 
-                Como padroeiro da internet e da juventude, ele é o intercessor perfeito para esta missão: 
-                usar jogos e software para levar a mensagem eterna aos corações digitais.
-            </p>
-        </div>
-
         <div className="mb-8 text-center">
             <h2 className="text-2xl font-bold mb-4">Willian Quintino</h2>
             <p className="mb-2 text-lg">Desenvolvedor Full Stack & Criador do Pixel Eucarístico</p>
