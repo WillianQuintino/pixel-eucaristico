@@ -45,7 +45,7 @@ export default function SoftwareFeature() {
         {/* Project 3: wwebjs-rest-api */}
         <div className="card bg-base-100 border-4 border-base-content shadow-[8px_8px_0_0_currentColor] rounded-none hover:translate-y-[-4px] transition-transform text-base-content overflow-hidden">
           <figure className="relative h-48 w-full border-b-4 border-base-content bg-base-200">
-            <img src="/logos/wwebjs_banana.png" alt="wwebjs-rest-api Showcase" className="object-cover w-full h-full" />
+            <img src="/logos/wwebjs_api.png" alt="wwebjs-rest-api Showcase" className="object-cover w-full h-full" />
           </figure>
           <div className="card-body">
             <h2 className="card-title text-xl text-info">wwebjs-rest-api</h2>

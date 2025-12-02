@@ -43,7 +43,6 @@ export default function Navbar() {
         </ul>
       </div>
       <div className="navbar-end">
-        <a className="btn btn-primary btn-sm border-2 border-base-content shadow-[2px_2px_0_0_currentColor] rounded-none">Login</a>
         <ThemeToggle />
       </div>
     </div>
