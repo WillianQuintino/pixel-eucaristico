@@ -18,19 +18,21 @@ export default function About() {
             </h2>
             
             <div className="flex flex-col md:flex-row gap-8 items-center mb-8">
-                <div className="w-full md:w-1/3 relative h-64 border-4 border-base-content bg-base-200">
-                    {/* Placeholder for St. Maximilian Kolbe Image */}
-                    <div className="absolute inset-0 flex items-center justify-center text-center p-4 opacity-50">
-                        [Imagem de São Maximiliano Kolbe]
-                    </div>
+                <div className="w-full md:w-1/3 relative h-80 border-4 border-base-content bg-base-200 overflow-hidden">
+                    <Image 
+                        src="/images/rycerz_niepokalanej.jpg" 
+                        alt="Capa da revista Rycerz Niepokalanej (Cavaleiro da Imaculada)" 
+                        fill 
+                        className="object-cover"
+                    />
                 </div>
                 <div className="w-full md:w-2/3">
                     <h3 className="text-xl font-bold mb-2 text-secondary">São Maximiliano Kolbe</h3>
                     <p className="text-lg leading-relaxed text-justify">
                         A <strong>Pixel Eucarístico</strong> nasceu de uma inspiração em oração diante do Santíssimo Sacramento. 
                         Olhamos para o exemplo de <strong>São Maximiliano Kolbe</strong>, que revolucionou a evangelização em sua época. 
-                        Ele transformou jornais e revistas, a "mídia de ponta" daquele tempo, em poderosas ferramentas para levar a Imaculada aos corações. 
-                        Seu projeto, a "Milícia da Imaculada", mostrou que a tecnologia deve servir à fé.
+                        Ele transformou jornais e revistas, como o <em>Cavaleiro da Imaculada</em>, em poderosas ferramentas para levar a Imaculada aos corações. 
+                        Seu uso da "mídia de ponta" daquele tempo nos inspira a usar a tecnologia de hoje.
                     </p>
                 </div>
             </div>
@@ -38,19 +40,21 @@ export default function About() {
             <div className="divider"></div>
 
             <div className="flex flex-col md:flex-row-reverse gap-8 items-center">
-                <div className="w-full md:w-1/3 relative h-64 border-4 border-base-content bg-base-200">
-                     {/* Placeholder for Carlo Acutis Image */}
-                     <div className="absolute inset-0 flex items-center justify-center text-center p-4 opacity-50">
-                        [Imagem do Beato Carlo Acutis]
-                    </div>
+                <div className="w-full md:w-1/3 relative h-80 border-4 border-base-content bg-base-200 overflow-hidden">
+                     <Image 
+                        src="/images/carlo_acutis_tomb.jpg" 
+                        alt="Túmulo do Beato Carlo Acutis em Assis" 
+                        fill 
+                        className="object-cover"
+                    />
                 </div>
                 <div className="w-full md:w-2/3">
                     <h3 className="text-xl font-bold mb-2 text-accent">Beato Carlo Acutis</h3>
                     <p className="text-lg leading-relaxed text-justify">
                         A confirmação de nossa missão veio através do exemplo do <strong>Beato Carlo Acutis</strong>. 
-                        Conhecido como o "Padroeiro da Internet", ele uniu sua paixão por computadores com seu amor pela Eucaristia, 
-                        criando um site para catalogar milagres eucarísticos. Ele é o nosso intercessor e modelo: 
-                        um jovem que santificou o digital. Assim como ele, queremos usar jogos e softwares para evangelizar a juventude e o mundo.
+                        Conhecido como o "Padroeiro da Internet", ele uniu sua paixão por computadores e jogos com seu amor pela Eucaristia.
+                        Sua vida nos mostra que a santidade é possível na era digital. Ele é o nosso intercessor e modelo: 
+                        um jovem que santificou o digital. Assim como ele, queremos usar jogos e softwares para evangelizar a juventude.
                     </p>
                 </div>
             </div>

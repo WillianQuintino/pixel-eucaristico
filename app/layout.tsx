@@ -10,8 +10,53 @@ const pressStart2P = Press_Start_2P({
 });
 
 export const metadata: Metadata = {
-  title: "Pixel Eucarístico",
-  description: "Software e Games com valores cristãos",
+  metadataBase: new URL('https://pixel-eucaristico.vercel.app'),
+  title: {
+    default: "Pixel Eucarístico | Games e Software Católicos",
+    template: "%s | Pixel Eucarístico"
+  },
+  description: "Produtora de jogos e softwares focada em criar experiências digitais com propósito e valores cristãos. Evangelização através da tecnologia.",
+  keywords: ["games católicos", "software católico", "evangelização digital", "carlo acutis", "são maximiliano kolbe", "tecnologia e fé", "pixel art", "jogos cristãos"],
+  authors: [{ name: "Willian Quintino" }],
+  creator: "Willian Quintino",
+  publisher: "Pixel Eucarístico",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  openGraph: {
+    type: "website",
+    locale: "pt_BR",
+    url: "https://pixel-eucaristico.vercel.app",
+    title: "Pixel Eucarístico | Games e Software Católicos",
+    description: "Onde a Fé encontra a Tecnologia. Jogos e softwares para evangelizar.",
+    siteName: "Pixel Eucarístico",
+    images: [
+      {
+        url: "/images/rycerz_niepokalanej.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Pixel Eucarístico - Evangelização através da tecnologia",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Pixel Eucarístico | Games e Software Católicos",
+    description: "Onde a Fé encontra a Tecnologia. Jogos e softwares para evangelizar.",
+    images: ["/images/rycerz_niepokalanej.jpg"],
+    creator: "@willianquintino",
+  },
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({
