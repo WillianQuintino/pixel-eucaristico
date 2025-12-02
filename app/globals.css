@@ -25,37 +25,17 @@
 }
 
 :root {
-  --background: var(--color-base-100);
-  --foreground: var(--color-base-content);
+  --background: oklch(100% 0 0);
+  --foreground: oklch(0% 0 0);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: var(--color-base-100);
-    --foreground: var(--color-base-content);
-  }
+[data-theme="dark"] {
+  --background: oklch(20% 0.02 290);
+  --foreground: oklch(98% 0 0);
 }
 
 body {
-  background-color: var(--background);
-  color: var(--foreground);
+  background-color: var(--fallback-b1,oklch(var(--b1)/1));
+  color: var(--fallback-bc,oklch(var(--bc)/1));
   font-family: var(--font-pixel);
-}
-
-/* Custom 8-bit Scrollbar */
-::-webkit-scrollbar {
-  width: 12px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--color-base-200);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--color-neutral);
-  border: 2px solid var(--color-base-200);
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--color-neutral-content);
 }

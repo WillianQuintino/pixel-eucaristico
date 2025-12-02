@@ -3,21 +3,26 @@
 import { useEffect, useState } from "react";
 
 export default function ThemeToggle() {
-  const [theme, setTheme] = useState("retro");
+  const [theme, setTheme] = useState("light");
 
   // Effect to apply theme
   useEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme);
-  }, [theme]);
+    const savedTheme = localStorage.getItem("theme") || "light";
+    setTheme(savedTheme);
+    document.documentElement.setAttribute("data-theme", savedTheme);
+  }, []);
 
   const toggleTheme = () => {
-    setTheme((prev) => (prev === "retro" ? "black" : "retro"));
+    const newTheme = theme === "light" ? "dark" : "light";
+    setTheme(newTheme);
+    document.documentElement.setAttribute("data-theme", newTheme);
+    localStorage.setItem("theme", newTheme);
   };
 
   return (
     <label className="swap swap-rotate btn btn-ghost btn-circle border-2 border-base-content shadow-[2px_2px_0_0_currentColor] rounded-none ml-2">
       {/* this hidden checkbox controls the state */}
-      <input type="checkbox" onChange={toggleTheme} checked={theme === "black"} />
+      <input type="checkbox" onChange={toggleTheme} checked={theme === "dark"} />
 
       {/* sun icon */}
       <svg
