@@ -42,7 +42,7 @@ export default function About() {
             <div className="flex flex-col md:flex-row-reverse gap-8 items-center">
                 <div className="w-full md:w-1/3 relative h-80 border-4 border-base-content bg-base-200 overflow-hidden">
                      <Image 
-                        src="/images/carlo_acutis.jpg" 
+                        src="/images/carlo_acutis_final.jpg" 
                         alt="Retrato de Santo Carlo Acutis" 
                         fill 
                         className="object-cover"
