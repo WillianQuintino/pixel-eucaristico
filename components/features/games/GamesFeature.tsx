@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export default function GamesFeature() {
   return (
-    <div className="flex flex-col gap-8 py-10 px-4 md:px-0" data-theme="theme-games">
+    <div className="flex flex-col gap-8 py-10 px-4 md:px-0 flavor-games">
       {/* Header */}
       <div className="text-center">
         <h1 className="text-3xl md:text-4xl font-bold mb-4 text-accent">Games</h1>

@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export default function HomeFeature() {
   return (
-    <div className="min-h-[80vh] flex flex-col items-center justify-center gap-12 py-10 relative overflow-hidden" data-theme="theme-landing">
+    <div className="min-h-[80vh] flex flex-col items-center justify-center gap-12 py-10 relative overflow-hidden flavor-landing">
       
       {/* Decorative Background Elements */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 opacity-10 pointer-events-none">

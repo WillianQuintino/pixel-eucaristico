@@ -11,13 +11,13 @@ export default function ThemeToggle() {
   }, [theme]);
 
   const toggleTheme = () => {
-    setTheme((prev) => (prev === "retro" ? "dark" : "retro"));
+    setTheme((prev) => (prev === "retro" ? "black" : "retro"));
   };
 
   return (
     <label className="swap swap-rotate btn btn-ghost btn-circle border-2 border-base-content shadow-[2px_2px_0_0_currentColor] rounded-none ml-2">
       {/* this hidden checkbox controls the state */}
-      <input type="checkbox" onChange={toggleTheme} checked={theme === "dark"} />
+      <input type="checkbox" onChange={toggleTheme} checked={theme === "black"} />
 
       {/* sun icon */}
       <svg
