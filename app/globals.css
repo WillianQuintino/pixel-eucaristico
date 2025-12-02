@@ -10,18 +10,21 @@
   --color-primary: oklch(65% 0.2 290); /* Purple/Blue mix */
   --color-secondary: oklch(70% 0.2 150); /* Green */
   --color-accent: oklch(75% 0.2 50); /* Gold/Orange */
+  --page-background: oklch(98% 0.01 290); /* Very light purple tint */
 }
 
 .flavor-games {
   --color-primary: oklch(60% 0.2 250); /* Blue */
   --color-secondary: oklch(70% 0.2 320); /* Pink/Magenta */
   --color-accent: oklch(80% 0.2 90); /* Yellow */
+  --page-background: oklch(96% 0.03 250); /* Light Blue tint */
 }
 
 .flavor-software {
   --color-primary: oklch(55% 0.2 200); /* Cyan/Teal */
   --color-secondary: oklch(65% 0.2 280); /* Indigo */
   --color-accent: oklch(75% 0.15 30); /* Orange */
+  --page-background: oklch(96% 0.02 200); /* Light Cyan tint */
 }
 
 :root {
@@ -32,6 +35,7 @@
 [data-theme="dark"] {
   --background: oklch(20% 0.02 290);
   --foreground: oklch(98% 0 0);
+  --page-background: var(--background); /* Ensure pages use dark background in dark mode */
 }
 
 body {
