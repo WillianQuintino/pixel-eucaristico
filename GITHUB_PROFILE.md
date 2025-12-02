@@ -15,7 +15,7 @@ Uma aventura emocionante sobre a vida do padroeiro da internet. Explore a vida d
 Aplicativo para acompanhamento da liturgia diária, facilitando o acesso às leituras e orações do dia.
 
 ### [Recanto](https://recanto-app.vercel.app)
-Sistema completo de gestão para casas de retiro, otimizando inscrições, organização de quartos e financeiro.
+Sistema para gerenciar, formar e organizar comunidades que não possuem site.
 
 ### [wwebjs-rest-api](https://github.com/Pixel-Eucaristico/wwebjs-rest-api)
 API REST robusta para integração com WhatsApp Web, facilitando a automação de mensagens.

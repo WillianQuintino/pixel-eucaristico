@@ -34,10 +34,10 @@ export default function SoftwareFeature() {
           </figure>
           <div className="card-body">
             <h2 className="card-title text-xl text-info">Recanto</h2>
-            <p>Sistema de gestão para casas de retiro.</p>
+            <p>Sistema para gerenciar, formar e organizar comunidades.</p>
             <div className="card-actions justify-end mt-4 flex-col gap-2">
                <a href="https://recanto-app.vercel.app" target="_blank" rel="noopener noreferrer" className="btn btn-info btn-sm border-2 border-base-content rounded-none w-full">Ver Projeto</a>
-               <a href="https://github.com/Pixel-Eucaristico/recanto-app" target="_blank" rel="noopener noreferrer" className="btn btn-secondary btn-sm border-2 border-base-content rounded-none w-full">Ver Git</a>
+               <a href="https://github.com/Pixel-Eucaristico/recanto" target="_blank" rel="noopener noreferrer" className="btn btn-secondary btn-sm border-2 border-base-content rounded-none w-full">Ver Git</a>
             </div>
           </div>
         </div>
@@ -66,7 +66,6 @@ export default function SoftwareFeature() {
             <p>Site de amostra para cliente.</p>
             <div className="card-actions justify-end mt-4 flex-col gap-2">
                <a href="https://alaska-sigma.vercel.app" target="_blank" rel="noopener noreferrer" className="btn btn-info btn-sm border-2 border-base-content rounded-none w-full">Ver Projeto</a>
-               {/* Assuming there is a git link, if not, placeholder or omit */}
                <a href="https://github.com/Pixel-Eucaristico/alaska-amostra" target="_blank" rel="noopener noreferrer" className="btn btn-secondary btn-sm border-2 border-base-content rounded-none w-full">Ver Git</a>
             </div>
           </div>

@@ -26,8 +26,9 @@ export default function GamesFeature() {
           <h2 className="card-title text-2xl mb-4">História do Santo Carlos Acutis</h2>
           <div className="badge badge-accent badge-outline rounded-none mb-4">Em Pesquisa</div>
           <p className="mb-4 text-base md:text-lg">
-            Este projeto está em fase de pesquisa dos livros e referências para poder criar o GDD (Game Design Document) do projeto.
-            Em breve, uma aventura emocionante sobre a vida do padroeiro da internet.
+            Carlo Acutis, o padroeiro da internet, usou a tecnologia para evangelizar e catalogar milagres eucarísticos. 
+            Este projeto, atualmente em fase de pesquisa para o GDD (Game Design Document), será uma aventura emocionante sobre sua vida, 
+            unindo fé e diversão para inspirar a juventude.
           </p>
           <div className="card-actions justify-end">
             <button className="btn btn-accent border-2 border-base-content shadow-[4px_4px_0_0_currentColor] rounded-none w-full md:w-auto" disabled>
