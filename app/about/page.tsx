@@ -42,16 +42,16 @@ export default function About() {
             <div className="flex flex-col md:flex-row-reverse gap-8 items-center">
                 <div className="w-full md:w-1/3 relative h-80 border-4 border-base-content bg-base-200 overflow-hidden">
                      <Image 
-                        src="/images/carlo_acutis_tomb.jpg" 
-                        alt="Túmulo do Beato Carlo Acutis em Assis" 
+                        src="/images/carlo_acutis.jpg" 
+                        alt="Retrato de Santo Carlo Acutis" 
                         fill 
                         className="object-cover"
                     />
                 </div>
                 <div className="w-full md:w-2/3">
-                    <h3 className="text-xl font-bold mb-2 text-accent">Beato Carlo Acutis</h3>
+                    <h3 className="text-xl font-bold mb-2 text-accent">Santo Carlo Acutis</h3>
                     <p className="text-lg leading-relaxed text-justify">
-                        A confirmação de nossa missão veio através do exemplo do <strong>Beato Carlo Acutis</strong>. 
+                        A confirmação de nossa missão veio através do exemplo do <strong>Santo Carlo Acutis</strong>. 
                         Conhecido como o "Padroeiro da Internet", ele uniu sua paixão por computadores e jogos com seu amor pela Eucaristia.
                         Sua vida nos mostra que a santidade é possível na era digital. Ele é o nosso intercessor e modelo: 
                         um jovem que santificou o digital. Assim como ele, queremos usar jogos e softwares para evangelizar a juventude.
