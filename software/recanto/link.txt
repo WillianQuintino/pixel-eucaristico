@@ -1,4 +1,4 @@
-Código: https://github.com/Pixel-Eucaristico/recanto-app/tree/next-js
+Código: https://github.com/WillianQuintino/recanto-app/tree/next-js
 Site: https://recanto-app.vercel.app
 
 Tecnologia de ponta e Propósito Social podem andar juntos? Criei um ecossistema Open Source para comunidades católicas. 🚀
