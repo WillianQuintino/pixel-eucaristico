@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export default function SoftwareFeature() {
   return (
-    <div className="flex flex-col gap-8 py-10 px-4 md:px-0 flavor-software" style={{ backgroundColor: 'var(--page-background)' }}>
+    <div className="flex flex-col gap-8 py-10 px-4 md:px-0 flavor-software">
       {/* Header */}
       <div className="text-center">
         <h1 className="text-3xl md:text-4xl font-bold mb-4 text-info">Software</h1>
@@ -14,7 +14,7 @@ export default function SoftwareFeature() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {/* Project 1: Mass Diária */}
         <div className="card bg-base-100 border-4 border-base-content shadow-[8px_8px_0_0_currentColor] rounded-none hover:translate-y-[-4px] transition-transform overflow-hidden text-base-content">
-          <figure className="relative h-48 w-full border-b-4 border-base-content bg-base-200">
+          <figure className="relative h-48 w-full border-b-4 border-base-content bg-software-tint">
             <img src="/videos/mass_diaria_showcase.webp" alt="Mass Diária Showcase" className="object-cover w-full h-full" />
           </figure>
           <div className="card-body">
@@ -29,7 +29,7 @@ export default function SoftwareFeature() {
 
         {/* Project 2: Recanto */}
         <div className="card bg-base-100 border-4 border-base-content shadow-[8px_8px_0_0_currentColor] rounded-none hover:translate-y-[-4px] transition-transform overflow-hidden text-base-content">
-          <figure className="relative h-48 w-full border-b-4 border-base-content bg-base-200">
+          <figure className="relative h-48 w-full border-b-4 border-base-content bg-software-tint">
             <img src="/videos/recanto_showcase.webp" alt="Recanto Showcase" className="object-cover w-full h-full" />
           </figure>
           <div className="card-body">
@@ -44,7 +44,7 @@ export default function SoftwareFeature() {
 
         {/* Project 3: wwebjs-rest-api */}
         <div className="card bg-base-100 border-4 border-base-content shadow-[8px_8px_0_0_currentColor] rounded-none hover:translate-y-[-4px] transition-transform text-base-content overflow-hidden">
-          <figure className="relative h-48 w-full border-b-4 border-base-content bg-base-200">
+          <figure className="relative h-48 w-full border-b-4 border-base-content bg-software-tint">
             <img src="/logos/wwebjs_api.png" alt="wwebjs-rest-api Showcase" className="object-cover w-full h-full" />
           </figure>
           <div className="card-body">
@@ -58,7 +58,7 @@ export default function SoftwareFeature() {
 
         {/* Project 4: Alaska */}
         <div className="card bg-base-100 border-4 border-base-content shadow-[8px_8px_0_0_currentColor] rounded-none hover:translate-y-[-4px] transition-transform overflow-hidden text-base-content">
-          <figure className="relative h-48 w-full border-b-4 border-base-content bg-base-200">
+          <figure className="relative h-48 w-full border-b-4 border-base-content bg-software-tint">
             <img src="/videos/alaska_showcase.webp" alt="Alaska Showcase" className="object-cover w-full h-full" />
           </figure>
           <div className="card-body">

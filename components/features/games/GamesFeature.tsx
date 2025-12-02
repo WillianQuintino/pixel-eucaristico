@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export default function GamesFeature() {
   return (
-    <div className="flex flex-col gap-8 py-10 px-4 md:px-0 flavor-games" style={{ backgroundColor: 'var(--page-background)' }}>
+    <div className="flex flex-col gap-8 py-10 px-4 md:px-0 flavor-games">
       {/* Header */}
       <div className="text-center">
         <h1 className="text-3xl md:text-4xl font-bold mb-4 text-accent">Games</h1>
@@ -12,7 +12,7 @@ export default function GamesFeature() {
 
       {/* Featured Game */}
       <div className="card lg:card-side bg-base-100 border-4 border-base-content shadow-[8px_8px_0_0_currentColor] rounded-none overflow-hidden text-base-content">
-        <figure className="lg:w-1/3 bg-accent/10 p-8 flex items-center justify-center border-b-4 lg:border-b-0 lg:border-r-4 border-base-content">
+        <figure className="lg:w-1/3 bg-games-tint p-8 flex items-center justify-center border-b-4 lg:border-b-0 lg:border-r-4 border-base-content">
              <div className="relative w-48 h-48">
                 <Image
                     src="/logos/nano_banana_saint.png"
