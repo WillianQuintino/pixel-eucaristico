@@ -1,4 +1,5 @@
 import Link from "next/link";
+import ThemeToggle from "./ThemeToggle";
 
 export default function Navbar() {
   return (
@@ -43,6 +44,7 @@ export default function Navbar() {
       </div>
       <div className="navbar-end">
         <a className="btn btn-primary btn-sm border-2 border-black shadow-[2px_2px_0_0_rgba(0,0,0,1)] rounded-none">Login</a>
+        <ThemeToggle />
       </div>
     </div>
   );

@@ -20,7 +20,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR" data-theme="retro">
+    <html lang="pt-BR" data-theme="retro" suppressHydrationWarning>
       <body
         className={`${pressStart2P.variable} antialiased min-h-screen flex flex-col`}
       >
