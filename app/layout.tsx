@@ -28,7 +28,7 @@ export default function RootLayout({
         <main className="flex-grow container mx-auto p-4">
           {children}
         </main>
-        <footer className="footer footer-center p-4 bg-base-300 text-base-content border-t-4 border-black">
+        <footer className="footer footer-center p-4 bg-base-300 text-base-content border-t-4 border-base-content">
           <aside>
             <p>Copyright © {new Date().getFullYear()} - Pixel Eucarístico</p>
           </aside>

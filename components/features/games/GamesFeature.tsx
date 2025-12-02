@@ -11,8 +11,8 @@ export default function GamesFeature() {
       </div>
 
       {/* Featured Game */}
-      <div className="card lg:card-side bg-base-100 border-4 border-black shadow-[8px_8px_0_0_rgba(0,0,0,1)] rounded-none overflow-hidden">
-        <figure className="lg:w-1/3 bg-accent/10 p-8 flex items-center justify-center border-b-4 lg:border-b-0 lg:border-r-4 border-black">
+      <div className="card lg:card-side bg-base-100 border-4 border-base-content shadow-[8px_8px_0_0_currentColor] rounded-none overflow-hidden text-base-content">
+        <figure className="lg:w-1/3 bg-accent/10 p-8 flex items-center justify-center border-b-4 lg:border-b-0 lg:border-r-4 border-base-content">
              <div className="relative w-48 h-48">
                 <Image
                     src="/logos/pixel-eucaristico---games.png"
@@ -30,7 +30,7 @@ export default function GamesFeature() {
             Em breve, uma aventura emocionante sobre a vida do padroeiro da internet.
           </p>
           <div className="card-actions justify-end">
-            <button className="btn btn-accent border-2 border-black shadow-[4px_4px_0_0_rgba(0,0,0,1)] rounded-none w-full md:w-auto" disabled>
+            <button className="btn btn-accent border-2 border-base-content shadow-[4px_4px_0_0_currentColor] rounded-none w-full md:w-auto" disabled>
               Em Breve
             </button>
           </div>

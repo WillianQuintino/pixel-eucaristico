@@ -3,7 +3,7 @@ import ThemeToggle from "./ThemeToggle";
 
 export default function Navbar() {
   return (
-    <div className="navbar bg-base-100 border-b-4 border-black sticky top-0 z-50">
+    <div className="navbar bg-base-100 border-b-4 border-base-content sticky top-0 z-50 text-base-content">
       <div className="navbar-start">
         <div className="dropdown">
           <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
@@ -24,7 +24,7 @@ export default function Navbar() {
           </div>
           <ul
             tabIndex={0}
-            className="menu menu-sm dropdown-content bg-base-100 rounded-none z-[1] mt-3 w-52 p-2 shadow-[4px_4px_0_0_rgba(0,0,0,1)] border-2 border-black"
+            className="menu menu-sm dropdown-content bg-base-100 rounded-none z-[1] mt-3 w-52 p-2 shadow-[4px_4px_0_0_currentColor] border-2 border-base-content"
           >
             <li><Link href="/">Home</Link></li>
             <li><Link href="/games">Games</Link></li>
@@ -36,14 +36,14 @@ export default function Navbar() {
       </div>
       <div className="navbar-center hidden lg:flex">
         <ul className="menu menu-horizontal px-1 gap-2">
-          <li><Link href="/" className="hover:bg-primary hover:text-white border-2 border-transparent hover:border-black transition-all rounded-none">Home</Link></li>
-          <li><Link href="/games" className="hover:bg-primary hover:text-white border-2 border-transparent hover:border-black transition-all rounded-none">Games</Link></li>
-          <li><Link href="/software" className="hover:bg-primary hover:text-white border-2 border-transparent hover:border-black transition-all rounded-none">Software</Link></li>
-          <li><Link href="/curriculum" className="hover:bg-primary hover:text-white border-2 border-transparent hover:border-black transition-all rounded-none">Curriculum</Link></li>
+          <li><Link href="/" className="hover:bg-primary hover:text-primary-content border-2 border-transparent hover:border-base-content transition-all rounded-none">Home</Link></li>
+          <li><Link href="/games" className="hover:bg-primary hover:text-primary-content border-2 border-transparent hover:border-base-content transition-all rounded-none">Games</Link></li>
+          <li><Link href="/software" className="hover:bg-primary hover:text-primary-content border-2 border-transparent hover:border-base-content transition-all rounded-none">Software</Link></li>
+          <li><Link href="/curriculum" className="hover:bg-primary hover:text-primary-content border-2 border-transparent hover:border-base-content transition-all rounded-none">Curriculum</Link></li>
         </ul>
       </div>
       <div className="navbar-end">
-        <a className="btn btn-primary btn-sm border-2 border-black shadow-[2px_2px_0_0_rgba(0,0,0,1)] rounded-none">Login</a>
+        <a className="btn btn-primary btn-sm border-2 border-base-content shadow-[2px_2px_0_0_currentColor] rounded-none">Login</a>
         <ThemeToggle />
       </div>
     </div>

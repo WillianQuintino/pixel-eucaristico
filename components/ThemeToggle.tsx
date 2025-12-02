@@ -15,7 +15,7 @@ export default function ThemeToggle() {
   };
 
   return (
-    <label className="swap swap-rotate btn btn-ghost btn-circle border-2 border-black shadow-[2px_2px_0_0_rgba(0,0,0,1)] rounded-none ml-2">
+    <label className="swap swap-rotate btn btn-ghost btn-circle border-2 border-base-content shadow-[2px_2px_0_0_currentColor] rounded-none ml-2">
       {/* this hidden checkbox controls the state */}
       <input type="checkbox" onChange={toggleTheme} checked={theme === "dark"} />
 
