@@ -55,7 +55,7 @@ export default function HomeFeature() {
         {/* Games Card */}
         <Link href="/games" className="group w-full">
             <div className="card bg-base-100 border-4 border-base-content shadow-[8px_8px_0_0_currentColor] hover:shadow-[12px_12px_0_0_currentColor] hover:translate-y-[-4px] transition-all duration-300 rounded-none h-full overflow-hidden text-base-content">
-                <div className="bg-games-tint p-8 flex justify-center border-b-4 border-base-content group-hover:opacity-90 transition-opacity">
+                <div className="bg-[#dbdbdc] p-8 flex justify-center border-b-4 border-base-content group-hover:opacity-90 transition-opacity">
                     <div className="relative w-32 h-32 md:w-40 md:h-40 transform group-hover:scale-110 transition-transform duration-300">
                         <Image
                             src="/logos/pixel-eucaristico---games.png"
@@ -78,7 +78,7 @@ export default function HomeFeature() {
         {/* Software Card */}
         <Link href="/software" className="group w-full">
             <div className="card bg-base-100 border-4 border-base-content shadow-[8px_8px_0_0_currentColor] hover:shadow-[12px_12px_0_0_currentColor] hover:translate-y-[-4px] transition-all duration-300 rounded-none h-full overflow-hidden text-base-content">
-                <div className="bg-software-tint p-8 flex justify-center border-b-4 border-base-content group-hover:opacity-90 transition-opacity">
+                <div className="bg-[#151832] p-8 flex justify-center border-b-4 border-base-content group-hover:opacity-90 transition-opacity">
                     <div className="relative w-32 h-32 md:w-40 md:h-40 transform group-hover:scale-110 transition-transform duration-300">
                         <Image
                             src="/logos/pixel-eucaristico---software.png"
