@@ -12,6 +12,23 @@ export default function SoftwareFeature() {
 
       {/* Projects Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {/* Project: DOMUS */}
+        <div className="card bg-base-100 border-4 border-base-content shadow-[8px_8px_0_0_currentColor] rounded-none hover:translate-y-[-4px] transition-transform overflow-hidden text-base-content">
+          <figure className="relative h-48 w-full border-b-4 border-base-content bg-gradient-to-br from-teal-700 to-teal-500 flex items-center justify-center">
+            <div className="flex flex-col items-center gap-2">
+              <svg viewBox="0 0 24 24" className="w-16 h-16 fill-white"><path d="M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3z"/></svg>
+              <span className="text-white font-bold text-lg tracking-wider">DOMUS</span>
+            </div>
+          </figure>
+          <div className="card-body">
+            <h2 className="card-title text-xl text-info">DOMUS</h2>
+            <p>Finanças pessoais com gamificação, orçamento 50/30/20, importação de NF-e, sync P2P criptografado e assistente IA.</p>
+            <div className="card-actions justify-end mt-4 flex-col gap-2">
+               <a href="https://domus.expo.app/" target="_blank" rel="noopener noreferrer" className="btn btn-info btn-sm border-2 border-base-content rounded-none w-full">Ver Projeto</a>
+            </div>
+          </div>
+        </div>
+
         {/* Project 1: Mass Diária */}
         <div className="card bg-base-100 border-4 border-base-content shadow-[8px_8px_0_0_currentColor] rounded-none hover:translate-y-[-4px] transition-transform overflow-hidden text-base-content">
           <figure className="relative h-48 w-full border-b-4 border-base-content bg-software-tint">
