@@ -151,7 +151,7 @@ export async function POST(req: NextRequest) {
       from: `"DOMUS Beta" <${process.env.SMTP_USER}>`,
       to: recipient,
       replyTo: data.email,
-      subject: `[DOMUS Beta] Nova inscrição: ${data.nome} (${device})`,
+      subject: `[DOMUS Beta] Nova inscrição: ${data.nome}`,
       html: buildHtml(data),
       text: [
         `[DOMUS Beta] Nova inscrição`,

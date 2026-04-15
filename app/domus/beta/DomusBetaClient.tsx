@@ -170,7 +170,7 @@ function SuccessBanner({
   );
 }
 
-// ─── Device picker ─────────────────────────────────────────────────────────────
+// ─── Device picker (Android only) ────────────────────────────────────────────
 
 function DevicePicker({
   value,
@@ -181,23 +181,19 @@ function DevicePicker({
   onChange: (d: Device | "") => void;
   toggle?: boolean;
 }) {
+  const active = value === "android";
   return (
-    <div className="grid grid-cols-2 gap-2">
-      {(["android", "ios"] as Device[]).map((d) => (
-        <button
-          key={d}
-          type="button"
-          onClick={() => onChange(toggle && value === d ? "" : d)}
-          className={`rounded-xl py-2.5 px-3 text-sm font-medium border transition-all ${
-            value === d
-              ? "bg-warning/15 border-warning text-warning"
-              : "bg-base-100 border-base-content/20 text-base-content/50 hover:border-warning/50 hover:text-warning"
-          }`}
-        >
-          {d === "android" ? "🤖 Android" : "🍎 iOS"}
-        </button>
-      ))}
-    </div>
+    <button
+      type="button"
+      onClick={() => onChange(toggle && active ? "" : "android")}
+      className={`w-full rounded-xl py-2.5 px-4 text-sm font-medium border transition-all text-left ${
+        active
+          ? "bg-warning/15 border-warning text-warning"
+          : "bg-base-100 border-base-content/20 text-base-content/50 hover:border-warning/50 hover:text-warning"
+      }`}
+    >
+      🤖 Android
+    </button>
   );
 }
 
@@ -208,7 +204,7 @@ function SignupFormComponent() {
   const [form, setForm] = useState<SignupForm>({
     nome: "",
     email: "",
-    dispositivo: "",
+    dispositivo: "android",
     ocupacao: "",
     motivacao: "",
     como_soube: "",
@@ -222,11 +218,6 @@ function SignupFormComponent() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!form.dispositivo) {
-      setErrorMsg("Selecione o dispositivo.");
-      setState("error");
-      return;
-    }
     setState("loading");
     setErrorMsg("");
     try {
@@ -254,7 +245,7 @@ function SignupFormComponent() {
         title="Inscrição recebida!"
         body="Entraremos em contato pelo e-mail informado quando as vagas estiverem abertas. Obrigado pelo interesse!"
         onReset={() => {
-          setForm({ nome: "", email: "", dispositivo: "", ocupacao: "", motivacao: "", como_soube: "" });
+          setForm({ nome: "", email: "", dispositivo: "android", ocupacao: "", motivacao: "", como_soube: "" });
           setState("idle");
         }}
       />
@@ -289,13 +280,6 @@ function SignupFormComponent() {
           />
         </Field>
       </div>
-
-      <Field label="Dispositivo" required>
-        <DevicePicker
-          value={form.dispositivo}
-          onChange={(d) => set("dispositivo", d)}
-        />
-      </Field>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Field label="Ocupação / Profissão">
@@ -606,7 +590,7 @@ export default function DomusBetaClient() {
           </p>
 
           <div className="flex flex-wrap justify-center gap-2 mt-6">
-            {["Android", "iOS", "100% Privado", "Católico", "Sem assinatura"].map(
+            {["Android", "100% Privado", "Católico", "Sem assinatura"].map(
               (tag) => (
                 <span key={tag} className="badge badge-outline text-xs">
                   {tag}
