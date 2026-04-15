@@ -29,7 +29,7 @@ interface FeedbackForm {
 
 type FormState = "idle" | "loading" | "success" | "error";
 
-// ─── Feature list ─────────────────────────────────────────────────────────────
+// ─── Data ─────────────────────────────────────────────────────────────────────
 
 const FEATURES = [
   {
@@ -55,7 +55,7 @@ const FEATURES = [
   {
     icon: "🤖",
     title: "IA Financeira",
-    desc: "Consultor financeiro com Claude, ChatGPT, Gemini ou DeepSeek. Sua chave, sem rastreamento.",
+    desc: "Consultor com Claude, ChatGPT, Gemini ou DeepSeek. Sua chave, sem rastreamento.",
   },
   {
     icon: "🏆",
@@ -74,42 +74,68 @@ const FEATURES = [
   },
 ];
 
-const FEEDBACK_TIPOS: { value: FeedbackTipo; label: string; color: string }[] =
-  [
-    { value: "bug", label: "🐛 Bug", color: "#EF4444" },
-    { value: "melhoria", label: "✨ Melhoria", color: "#10B981" },
-    { value: "sugestao", label: "💡 Sugestão", color: "#C9A96E" },
-    { value: "elogio", label: "🙌 Elogio", color: "#8B5CF6" },
-  ];
+const FEEDBACK_TIPOS: {
+  value: FeedbackTipo;
+  label: string;
+  activeCls: string;
+  btnCls: string;
+}[] = [
+  {
+    value: "bug",
+    label: "🐛 Bug",
+    activeCls: "bg-error/15 border-error text-error",
+    btnCls: "btn-error",
+  },
+  {
+    value: "melhoria",
+    label: "✨ Melhoria",
+    activeCls: "bg-success/15 border-success text-success",
+    btnCls: "btn-success",
+  },
+  {
+    value: "sugestao",
+    label: "💡 Sugestão",
+    activeCls: "bg-warning/15 border-warning text-warning",
+    btnCls: "btn-warning",
+  },
+  {
+    value: "elogio",
+    label: "🙌 Elogio",
+    activeCls: "bg-secondary/15 border-secondary text-secondary",
+    btnCls: "btn-secondary",
+  },
+];
 
-// ─── Input component ──────────────────────────────────────────────────────────
+// ─── Field wrapper ─────────────────────────────────────────────────────────────
 
 function Field({
   label,
   required,
+  hint,
   children,
 }: {
   label: string;
   required?: boolean;
+  hint?: React.ReactNode;
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-col gap-1.5">
-      <label className="text-[11px] font-semibold tracking-widest uppercase text-[#8A8070]">
+    <fieldset className="fieldset gap-1">
+      <legend className="fieldset-legend text-[10px] uppercase tracking-widest text-base-content/50 font-semibold">
         {label}
-        {required && <span className="text-[#C9A96E] ml-1">*</span>}
-      </label>
+        {required && <span className="text-warning ml-1">*</span>}
+      </legend>
       {children}
-    </div>
+      {hint && (
+        <p className="fieldset-label text-[10px] text-base-content/40 self-end">
+          {hint}
+        </p>
+      )}
+    </fieldset>
   );
 }
 
-const inputClass =
-  "w-full bg-[#141210] border border-[#C9A96E25] rounded-xl px-4 py-3 text-[#F5F0E8] text-sm placeholder-[#4A4035] focus:outline-none focus:border-[#C9A96E60] focus:ring-1 focus:ring-[#C9A96E30] transition-all";
-
-const textareaClass = inputClass + " resize-none leading-relaxed";
-
-// ─── Success banner ───────────────────────────────────────────────────────────
+// ─── Success banner ────────────────────────────────────────────────────────────
 
 function SuccessBanner({
   title,
@@ -122,16 +148,18 @@ function SuccessBanner({
 }) {
   return (
     <div className="flex flex-col items-center text-center gap-6 py-10">
-      <div className="w-20 h-20 rounded-full bg-[#10B98120] border border-[#10B98140] flex items-center justify-center text-4xl">
+      <div className="w-20 h-20 rounded-full bg-success/15 border border-success/40 flex items-center justify-center text-4xl">
         ✅
       </div>
       <div>
-        <p className="text-[#F5F0E8] text-xl font-bold mb-2">{title}</p>
-        <p className="text-[#8A8070] text-sm leading-relaxed max-w-xs">{body}</p>
+        <p className="text-base-content text-xl font-bold mb-2">{title}</p>
+        <p className="text-base-content/60 text-sm leading-relaxed max-w-xs">
+          {body}
+        </p>
       </div>
       <button
         onClick={onReset}
-        className="text-[#C9A96E] text-sm underline underline-offset-4 hover:opacity-70 transition-opacity"
+        className="text-warning text-sm underline underline-offset-4 hover:opacity-70 transition-opacity"
       >
         Enviar outro
       </button>
@@ -139,7 +167,38 @@ function SuccessBanner({
   );
 }
 
-// ─── Signup form ──────────────────────────────────────────────────────────────
+// ─── Device picker ─────────────────────────────────────────────────────────────
+
+function DevicePicker({
+  value,
+  onChange,
+  toggle,
+}: {
+  value: Device | "";
+  onChange: (d: Device | "") => void;
+  toggle?: boolean;
+}) {
+  return (
+    <div className="grid grid-cols-2 gap-2">
+      {(["android", "ios"] as Device[]).map((d) => (
+        <button
+          key={d}
+          type="button"
+          onClick={() => onChange(toggle && value === d ? "" : d)}
+          className={`rounded-xl py-2.5 px-3 text-sm font-medium border transition-all ${
+            value === d
+              ? "bg-warning/15 border-warning text-warning"
+              : "bg-base-100 border-base-content/20 text-base-content/50 hover:border-warning/50 hover:text-warning"
+          }`}
+        >
+          {d === "android" ? "🤖 Android" : "🍎 iOS"}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+// ─── Signup form ───────────────────────────────────────────────────────────────
 
 function SignupFormComponent() {
   const baseId = useId();
@@ -200,13 +259,13 @@ function SignupFormComponent() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Field label="Nome completo" required>
           <input
             id={`${baseId}-nome`}
             type="text"
-            className={inputClass}
+            className="input input-bordered w-full"
             placeholder="Seu nome"
             value={form.nome}
             onChange={(e) => set("nome", e.target.value)}
@@ -219,7 +278,7 @@ function SignupFormComponent() {
           <input
             id={`${baseId}-email`}
             type="email"
-            className={inputClass}
+            className="input input-bordered w-full"
             placeholder="seu@email.com"
             value={form.email}
             onChange={(e) => set("email", e.target.value)}
@@ -229,30 +288,18 @@ function SignupFormComponent() {
       </div>
 
       <Field label="Dispositivo" required>
-        <div className="grid grid-cols-2 gap-3">
-          {(["android", "ios"] as Device[]).map((d) => (
-            <button
-              key={d}
-              type="button"
-              onClick={() => set("dispositivo", d)}
-              className={`flex items-center justify-center gap-2 rounded-xl py-3 px-4 text-sm font-medium border transition-all ${
-                form.dispositivo === d
-                  ? "bg-[#C9A96E20] border-[#C9A96E] text-[#C9A96E]"
-                  : "bg-[#141210] border-[#C9A96E25] text-[#8A8070] hover:border-[#C9A96E50] hover:text-[#C9A96E]"
-              }`}
-            >
-              {d === "android" ? "🤖 Android" : "🍎 iOS"}
-            </button>
-          ))}
-        </div>
+        <DevicePicker
+          value={form.dispositivo}
+          onChange={(d) => set("dispositivo", d)}
+        />
       </Field>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Field label="Ocupação / Profissão">
           <input
             id={`${baseId}-ocupacao`}
             type="text"
-            className={inputClass}
+            className="input input-bordered w-full"
             placeholder="Ex: Desenvolvedor, Estudante…"
             value={form.ocupacao}
             onChange={(e) => set("ocupacao", e.target.value)}
@@ -263,7 +310,7 @@ function SignupFormComponent() {
           <input
             id={`${baseId}-como_soube`}
             type="text"
-            className={inputClass}
+            className="input input-bordered w-full"
             placeholder="Ex: Instagram, amigo, GitHub…"
             value={form.como_soube}
             onChange={(e) => set("como_soube", e.target.value)}
@@ -271,10 +318,14 @@ function SignupFormComponent() {
         </Field>
       </div>
 
-      <Field label="Por que quer testar o DOMUS?" required>
+      <Field
+        label="Por que quer testar o DOMUS?"
+        required
+        hint={`${form.motivacao.length} / 20 mín.`}
+      >
         <textarea
           id={`${baseId}-motivacao`}
-          className={textareaClass}
+          className="textarea textarea-bordered w-full leading-relaxed"
           rows={4}
           placeholder="Conte um pouco sobre o que te interessa no app e o que espera do teste…"
           value={form.motivacao}
@@ -282,33 +333,34 @@ function SignupFormComponent() {
           required
           minLength={20}
         />
-        <p className="text-[10px] text-[#4A4035] mt-0.5 self-end">
-          {form.motivacao.length} / 20 mín.
-        </p>
       </Field>
 
       {state === "error" && (
-        <p className="text-[#EF4444] text-xs bg-[#EF444415] border border-[#EF444430] rounded-lg px-4 py-3">
+        <div role="alert" className="alert alert-error alert-soft text-sm">
           {errorMsg}
-        </p>
+        </div>
       )}
 
       <button
         type="submit"
         disabled={state === "loading"}
-        className="w-full bg-[#C9A96E] hover:bg-[#DDB87A] disabled:opacity-50 disabled:cursor-not-allowed text-[#111008] font-bold text-sm rounded-xl py-4 transition-all active:scale-[0.98]"
+        className="btn btn-warning w-full border-2 border-base-content shadow-[4px_4px_0_0_currentColor] rounded-none mt-2"
       >
-        {state === "loading" ? "Enviando…" : "Quero Testar o DOMUS →"}
+        {state === "loading" ? (
+          <span className="loading loading-spinner loading-sm" />
+        ) : (
+          "Quero Testar o DOMUS →"
+        )}
       </button>
 
-      <p className="text-center text-[10px] text-[#4A4035]">
+      <p className="text-center text-[10px] text-base-content/40">
         Nenhum dado financeiro é coletado. Apenas nome e e-mail para contato.
       </p>
     </form>
   );
 }
 
-// ─── Feedback form ────────────────────────────────────────────────────────────
+// ─── Feedback form ─────────────────────────────────────────────────────────────
 
 function FeedbackFormComponent() {
   const baseId = useId();
@@ -372,8 +424,7 @@ function FeedbackFormComponent() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-      {/* Tipo de feedback */}
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       <Field label="Tipo de feedback" required>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           {FEEDBACK_TIPOS.map((t) => (
@@ -383,18 +434,9 @@ function FeedbackFormComponent() {
               onClick={() => set("tipo", t.value)}
               className={`rounded-xl py-2.5 px-3 text-xs font-semibold border transition-all ${
                 form.tipo === t.value
-                  ? `border-[${t.color}] text-[${t.color}]`
-                  : "bg-[#141210] border-[#C9A96E25] text-[#8A8070] hover:border-[#C9A96E50]"
+                  ? t.activeCls
+                  : "bg-base-100 border-base-content/20 text-base-content/50 hover:border-base-content/40"
               }`}
-              style={
-                form.tipo === t.value
-                  ? {
-                      backgroundColor: t.color + "18",
-                      borderColor: t.color,
-                      color: t.color,
-                    }
-                  : {}
-              }
             >
               {t.label}
             </button>
@@ -402,12 +444,12 @@ function FeedbackFormComponent() {
         </div>
       </Field>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Field label="Nome" required>
           <input
             id={`${baseId}-nome`}
             type="text"
-            className={inputClass}
+            className="input input-bordered w-full"
             placeholder="Seu nome"
             value={form.nome}
             onChange={(e) => set("nome", e.target.value)}
@@ -420,7 +462,7 @@ function FeedbackFormComponent() {
           <input
             id={`${baseId}-email`}
             type="email"
-            className={inputClass}
+            className="input input-bordered w-full"
             placeholder="seu@email.com"
             value={form.email}
             onChange={(e) => set("email", e.target.value)}
@@ -433,7 +475,7 @@ function FeedbackFormComponent() {
         <input
           id={`${baseId}-titulo`}
           type="text"
-          className={inputClass}
+          className="input input-bordered w-full"
           placeholder={
             form.tipo === "bug"
               ? "Ex: App trava ao abrir scanner de NF"
@@ -452,14 +494,18 @@ function FeedbackFormComponent() {
         />
       </Field>
 
-      <Field label="Descrição detalhada" required>
+      <Field
+        label="Descrição detalhada"
+        required
+        hint={`${form.descricao.length} / 20 mín.`}
+      >
         <textarea
           id={`${baseId}-descricao`}
-          className={textareaClass}
+          className="textarea textarea-bordered w-full leading-relaxed"
           rows={5}
           placeholder={
             form.tipo === "bug"
-              ? "Descreva o passo a passo para reproduzir o problema, o comportamento esperado e o que aconteceu de fato…"
+              ? "Passo a passo para reproduzir o problema, comportamento esperado e o que aconteceu…"
               : "Descreva sua ideia com o máximo de detalhes possível…"
           }
           value={form.descricao}
@@ -467,38 +513,22 @@ function FeedbackFormComponent() {
           required
           minLength={20}
         />
-        <p className="text-[10px] text-[#4A4035] mt-0.5 self-end">
-          {form.descricao.length} / 20 mín.
-        </p>
       </Field>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Field label="Dispositivo">
-          <div className="grid grid-cols-2 gap-2">
-            {(["android", "ios"] as Device[]).map((d) => (
-              <button
-                key={d}
-                type="button"
-                onClick={() =>
-                  set("dispositivo", form.dispositivo === d ? "" : d)
-                }
-                className={`rounded-xl py-2.5 text-xs font-medium border transition-all ${
-                  form.dispositivo === d
-                    ? "bg-[#C9A96E20] border-[#C9A96E] text-[#C9A96E]"
-                    : "bg-[#141210] border-[#C9A96E25] text-[#8A8070] hover:border-[#C9A96E50]"
-                }`}
-              >
-                {d === "android" ? "🤖 Android" : "🍎 iOS"}
-              </button>
-            ))}
-          </div>
+          <DevicePicker
+            value={form.dispositivo}
+            onChange={(d) => set("dispositivo", d)}
+            toggle
+          />
         </Field>
 
         <Field label="Versão do app">
           <input
             id={`${baseId}-versao`}
             type="text"
-            className={inputClass}
+            className="input input-bordered w-full"
             placeholder="Ex: 1.0.3"
             value={form.versao_app}
             onChange={(e) => set("versao_app", e.target.value)}
@@ -507,152 +537,100 @@ function FeedbackFormComponent() {
       </div>
 
       {state === "error" && (
-        <p className="text-[#EF4444] text-xs bg-[#EF444415] border border-[#EF444430] rounded-lg px-4 py-3">
+        <div role="alert" className="alert alert-error alert-soft text-sm">
           {errorMsg}
-        </p>
+        </div>
       )}
 
       <button
         type="submit"
         disabled={state === "loading"}
-        className="w-full font-bold text-sm rounded-xl py-4 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
-        style={
-          selectedTipo
-            ? {
-                backgroundColor: selectedTipo.color + "20",
-                border: `1px solid ${selectedTipo.color}60`,
-                color: selectedTipo.color,
-              }
-            : {
-                backgroundColor: "#C9A96E20",
-                border: "1px solid #C9A96E60",
-                color: "#C9A96E",
-              }
-        }
+        className={`btn w-full border-2 border-base-content shadow-[4px_4px_0_0_currentColor] rounded-none mt-2 ${
+          selectedTipo ? selectedTipo.btnCls : "btn-warning"
+        }`}
       >
-        {state === "loading" ? "Enviando…" : "Enviar Feedback →"}
+        {state === "loading" ? (
+          <span className="loading loading-spinner loading-sm" />
+        ) : (
+          "Enviar Feedback →"
+        )}
       </button>
     </form>
   );
 }
 
-// ─── Main page client ─────────────────────────────────────────────────────────
+// ─── Main page ─────────────────────────────────────────────────────────────────
 
 export default function DomusBetaClient() {
   const [tab, setTab] = useState<Tab>("signup");
 
   return (
     <div className="min-h-screen -mx-4 -mt-4">
+
       {/* ── Hero ──────────────────────────────────────────────── */}
-      <div
-        className="relative overflow-hidden px-6 py-16 md:py-24 text-center"
-        style={{
-          background:
-            "linear-gradient(160deg, #1C1914 0%, #0E0C08 50%, #141210 100%)",
-        }}
-      >
-        {/* subtle grid */}
+      <div className="relative overflow-hidden bg-base-300 px-6 py-16 md:py-24 text-center">
+        {/* subtle grid overlay */}
         <div
-          className="absolute inset-0 opacity-[0.04]"
+          className="absolute inset-0 opacity-[0.06] pointer-events-none"
           style={{
             backgroundImage:
-              "linear-gradient(#C9A96E 1px, transparent 1px), linear-gradient(90deg, #C9A96E 1px, transparent 1px)",
+              "linear-gradient(currentColor 1px, transparent 1px), linear-gradient(90deg, currentColor 1px, transparent 1px)",
             backgroundSize: "40px 40px",
           }}
         />
 
         <div className="relative z-10 max-w-2xl mx-auto">
           {/* App icon */}
-          <div
-            className="inline-flex items-center justify-center w-20 h-20 rounded-[22px] mb-6 border"
-            style={{
-              background: "linear-gradient(135deg, #2A2318, #1C1914)",
-              borderColor: "#C9A96E40",
-            }}
-          >
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-[22px] mb-6 bg-base-200 border-4 border-base-content shadow-[6px_6px_0_0_currentColor]">
             <span className="text-4xl">🏠</span>
           </div>
 
-          <div
-            className="inline-block text-xs font-bold tracking-widest uppercase px-3 py-1.5 rounded-full mb-4 border"
-            style={{
-              background: "#C9A96E15",
-              borderColor: "#C9A96E40",
-              color: "#C9A96E",
-            }}
-          >
-            Teste Fechado — Beta
+          <div className="mb-4">
+            <span className="badge badge-warning badge-outline font-bold tracking-widest uppercase text-xs px-3 py-3">
+              Teste Fechado — Beta
+            </span>
           </div>
 
-          <h1
-            className="text-3xl md:text-5xl font-extrabold mb-4"
-            style={{ color: "#F5F0E8" }}
-          >
+          <h1 className="text-4xl md:text-5xl font-extrabold mb-3 text-base-content">
             DOMUS
           </h1>
-          <p
-            className="text-lg md:text-xl font-semibold mb-2"
-            style={{ color: "#C9A96E" }}
-          >
+          <p className="text-lg md:text-xl font-semibold mb-2 text-warning">
             Finanças Pessoais & Gamificação
           </p>
-          <p
-            className="text-sm md:text-base leading-relaxed max-w-lg mx-auto"
-            style={{ color: "#8A8070" }}
-          >
+          <p className="text-sm md:text-base leading-relaxed max-w-lg mx-auto text-base-content/60">
             App de finanças 100% local, com scanner de NF, IA financeira,
-            sincronização P2P e muito mais. Seus dados só ficam no seu
-            dispositivo.
+            sincronização P2P e muito mais. Seus dados só ficam no seu dispositivo.
           </p>
 
           <div className="flex flex-wrap justify-center gap-2 mt-6">
-            {["Android", "iOS", "100% Privado", "Católico", "Sem assinatura"].map((tag) => (
-              <span
-                key={tag}
-                className="text-xs px-3 py-1 rounded-full border"
-                style={{
-                  background: "#F5F0E808",
-                  borderColor: "#F5F0E820",
-                  color: "#8A8070",
-                }}
-              >
-                {tag}
-              </span>
-            ))}
+            {["Android", "iOS", "100% Privado", "Católico", "Sem assinatura"].map(
+              (tag) => (
+                <span key={tag} className="badge badge-outline text-xs">
+                  {tag}
+                </span>
+              )
+            )}
           </div>
         </div>
       </div>
 
-      {/* ── Features grid ─────────────────────────────────────── */}
-      <div
-        className="px-4 py-12"
-        style={{ background: "#111008" }}
-      >
+      {/* ── Features grid ──────────────────────────────────────── */}
+      <div className="bg-base-100 px-4 py-12">
         <div className="max-w-3xl mx-auto">
-          <p
-            className="text-center text-xs font-bold tracking-widest uppercase mb-8"
-            style={{ color: "#C9A96E" }}
-          >
+          <p className="text-center text-xs font-bold tracking-widest uppercase mb-8 text-warning">
             O que você vai testar
           </p>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {FEATURES.map((f) => (
               <div
                 key={f.title}
-                className="rounded-2xl p-4 border transition-colors"
-                style={{
-                  background: "#1C1914",
-                  borderColor: "#C9A96E20",
-                }}
+                className="bg-base-200 border border-base-content/15 rounded-2xl p-4 hover:border-warning/40 transition-colors"
               >
                 <span className="text-2xl block mb-2">{f.icon}</span>
-                <p
-                  className="text-sm font-semibold mb-1"
-                  style={{ color: "#F5F0E8" }}
-                >
+                <p className="text-sm font-semibold mb-1 text-base-content">
                   {f.title}
                 </p>
-                <p className="text-xs leading-relaxed" style={{ color: "#8A8070" }}>
+                <p className="text-xs leading-relaxed text-base-content/55">
                   {f.desc}
                 </p>
               </div>
@@ -661,67 +639,39 @@ export default function DomusBetaClient() {
         </div>
       </div>
 
-      {/* ── Catholic differentiator ───────────────────────────── */}
-      <div
-        className="px-4 py-10"
-        style={{ background: "#0E0C08", borderTop: "1px solid #C9A96E15" }}
-      >
+      {/* ── Catholic differentiator ─────────────────────────────── */}
+      <div className="bg-base-200 px-4 py-10 border-y border-base-content/10">
         <div className="max-w-3xl mx-auto">
-          <div
-            className="rounded-3xl p-6 md:p-8 border flex flex-col md:flex-row items-start md:items-center gap-6"
-            style={{
-              background: "linear-gradient(135deg, #1C1914 0%, #1A1610 100%)",
-              borderColor: "#C9A96E35",
-            }}
-          >
-            <div
-              className="flex-shrink-0 w-16 h-16 rounded-2xl flex items-center justify-center text-3xl border"
-              style={{ background: "#C9A96E15", borderColor: "#C9A96E30" }}
-            >
+          <div className="bg-base-100 border-2 border-warning/30 rounded-2xl p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center gap-5">
+            <div className="flex-shrink-0 w-14 h-14 rounded-2xl flex items-center justify-center text-3xl bg-warning/10 border border-warning/30">
               ✝️
             </div>
             <div className="flex-1">
-              <div
-                className="inline-block text-[10px] font-bold tracking-widest uppercase px-2.5 py-1 rounded-full mb-2 border"
-                style={{
-                  background: "#C9A96E12",
-                  borderColor: "#C9A96E35",
-                  color: "#C9A96E",
-                }}
-              >
-                Diferencial Católico
+              <div className="mb-2">
+                <span className="badge badge-warning badge-outline text-[10px] font-bold tracking-widest uppercase">
+                  Diferencial Católico
+                </span>
               </div>
-              <h3
-                className="text-base md:text-lg font-bold mb-1"
-                style={{ color: "#F5F0E8" }}
-              >
+              <h3 className="text-base md:text-lg font-bold mb-1 text-base-content">
                 Troféu Surpresa do Santo do Mês
               </h3>
-              <p
-                className="text-xs leading-relaxed"
-                style={{ color: "#8A8070" }}
-              >
+              <p className="text-xs leading-relaxed text-base-content/60">
                 Todo mês o DOMUS sorteia um santo da liturgia para ser o troféu
-                especial daquele período — como São Marcos Evangelista em Abril.
-                A gamificação une fé e disciplina financeira, integrando o
-                calendário litúrgico à sua jornada de crescimento.
+                especial do período — como São Marcos Evangelista em Abril. A
+                gamificação une fé e disciplina financeira, integrando o calendário
+                litúrgico à sua jornada de crescimento.
               </p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* ── Forms ─────────────────────────────────────────────── */}
-      <div
-        className="px-4 py-12"
-        style={{ background: "#0E0C08" }}
-      >
+      {/* ── Forms ──────────────────────────────────────────────── */}
+      <div className="bg-base-100 px-4 py-12">
         <div className="max-w-2xl mx-auto">
+
           {/* Tab switcher */}
-          <div
-            className="flex rounded-2xl p-1 mb-8 gap-1"
-            style={{ background: "#1C1914", border: "1px solid #C9A96E20" }}
-          >
+          <div className="flex bg-base-200 border-2 border-base-content rounded-none shadow-[4px_4px_0_0_currentColor] p-1 mb-8 gap-1">
             {(
               [
                 { id: "signup", label: "📋 Quero Testar" },
@@ -731,17 +681,11 @@ export default function DomusBetaClient() {
               <button
                 key={t.id}
                 onClick={() => setTab(t.id)}
-                className="flex-1 rounded-xl py-3 text-sm font-semibold transition-all"
-                style={
+                className={`flex-1 py-3 text-sm font-bold transition-all rounded-none ${
                   tab === t.id
-                    ? {
-                        background: "#C9A96E",
-                        color: "#111008",
-                      }
-                    : {
-                        color: "#8A8070",
-                      }
-                }
+                    ? "bg-warning text-warning-content border-2 border-base-content shadow-[2px_2px_0_0_currentColor]"
+                    : "text-base-content/50 hover:text-base-content"
+                }`}
               >
                 {t.label}
               </button>
@@ -749,22 +693,13 @@ export default function DomusBetaClient() {
           </div>
 
           {/* Form card */}
-          <div
-            className="rounded-3xl p-6 md:p-8 border"
-            style={{ background: "#1C1914", borderColor: "#C9A96E20" }}
-          >
+          <div className="bg-base-200 border-4 border-base-content rounded-none shadow-[8px_8px_0_0_currentColor] p-6 md:p-8">
             {tab === "signup" ? (
               <>
-                <h2
-                  className="text-lg font-bold mb-1"
-                  style={{ color: "#F5F0E8" }}
-                >
+                <h2 className="text-lg font-bold mb-1 text-base-content">
                   Inscrição para o Beta
                 </h2>
-                <p
-                  className="text-xs mb-6 leading-relaxed"
-                  style={{ color: "#8A8070" }}
-                >
+                <p className="text-xs mb-6 leading-relaxed text-base-content/55">
                   Preencha o formulário e entraremos em contato quando as vagas
                   estiverem disponíveis.
                 </p>
@@ -772,16 +707,10 @@ export default function DomusBetaClient() {
               </>
             ) : (
               <>
-                <h2
-                  className="text-lg font-bold mb-1"
-                  style={{ color: "#F5F0E8" }}
-                >
+                <h2 className="text-lg font-bold mb-1 text-base-content">
                   Feedback de Uso
                 </h2>
-                <p
-                  className="text-xs mb-6 leading-relaxed"
-                  style={{ color: "#8A8070" }}
-                >
+                <p className="text-xs mb-6 leading-relaxed text-base-content/55">
                   Já está testando? Reporte bugs, sugira melhorias ou envie um
                   elogio. Toda contribuição é muito bem-vinda!
                 </p>
@@ -791,16 +720,12 @@ export default function DomusBetaClient() {
           </div>
 
           {/* Privacy note */}
-          <p
-            className="text-center text-[11px] mt-6 leading-relaxed"
-            style={{ color: "#4A4035" }}
-          >
+          <p className="text-center text-[11px] mt-6 leading-relaxed text-base-content/40">
             Suas informações são usadas exclusivamente para contato sobre o beta.
             Veja nossa{" "}
             <a
               href="/domus/privacy"
-              className="underline underline-offset-2 hover:opacity-70 transition-opacity"
-              style={{ color: "#C9A96E" }}
+              className="text-warning underline underline-offset-2 hover:opacity-70 transition-opacity"
             >
               Política de Privacidade
             </a>
@@ -809,18 +734,14 @@ export default function DomusBetaClient() {
         </div>
       </div>
 
-      {/* ── Footer strip ──────────────────────────────────────── */}
-      <div
-        className="px-4 py-8 text-center border-t"
-        style={{ background: "#0E0C08", borderColor: "#C9A96E15" }}
-      >
-        <p className="text-xs font-bold" style={{ color: "#C9A96E" }}>
-          DOMUS · Pixel Eucarístico
-        </p>
-        <p className="text-[11px] mt-1" style={{ color: "#4A4035" }}>
+      {/* ── Footer strip ───────────────────────────────────────── */}
+      <div className="bg-base-200 border-t border-base-content/10 px-4 py-8 text-center">
+        <p className="text-xs font-bold text-warning">DOMUS · Pixel Eucarístico</p>
+        <p className="text-[11px] mt-1 text-base-content/40">
           Onde a Fé encontra a Tecnologia
         </p>
       </div>
+
     </div>
   );
 }
