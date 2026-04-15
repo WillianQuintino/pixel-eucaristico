@@ -90,32 +90,6 @@ export default function SoftwareFeature() {
         </div>
       </div>
 
-      {/* Animation Showcase Section */}
-      <div className="mt-12 p-8 border-4 border-base-content bg-base-200 rounded-none relative overflow-hidden group text-base-content">
-        <h2 className="text-2xl font-bold mb-6 text-center">Showcase de Animações</h2>
-        
-        <div className="flex justify-center gap-8 flex-wrap">
-            {/* Bouncing Ball */}
-            <div className="w-16 h-16 bg-primary border-2 border-base-content animate-bounce flex items-center justify-center text-primary-content font-bold shadow-[4px_4px_0_0_currentColor]">
-                8-BIT
-            </div>
-
-            {/* Spinning Square */}
-            <div className="w-16 h-16 bg-secondary border-2 border-base-content animate-spin flex items-center justify-center text-secondary-content font-bold shadow-[4px_4px_0_0_currentColor]">
-                PIXEL
-            </div>
-
-            {/* Pulse Circle */}
-            <div className="w-16 h-16 bg-accent border-2 border-base-content animate-pulse rounded-full flex items-center justify-center text-accent-content font-bold shadow-[4px_4px_0_0_currentColor]">
-                DEV
-            </div>
-        </div>
-        
-        <p className="text-center mt-8 text-sm opacity-70">
-            * Estas animações são renderizadas com CSS puro e Tailwind.
-        </p>
-      </div>
-
       {/* Back Button */}
       <div className="text-center mt-8">
         <Link href="/" className="btn btn-ghost hover:bg-transparent hover:underline">
