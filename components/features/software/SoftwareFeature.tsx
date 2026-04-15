@@ -25,6 +25,7 @@ export default function SoftwareFeature() {
             <p>Finanças pessoais com gamificação, orçamento 50/30/20, importação de NF-e, sync P2P criptografado e assistente IA.</p>
             <div className="card-actions justify-end mt-4 flex-col gap-2">
                <a href="https://domus.expo.app/" target="_blank" rel="noopener noreferrer" className="btn btn-info btn-sm border-2 border-base-content rounded-none w-full">Ver Projeto</a>
+               <Link href="/domus/beta" className="btn btn-warning btn-sm border-2 border-base-content rounded-none w-full">🧪 Teste Beta</Link>
             </div>
           </div>
         </div>
@@ -87,32 +88,6 @@ export default function SoftwareFeature() {
             </div>
           </div>
         </div>
-      </div>
-
-      {/* Animation Showcase Section */}
-      <div className="mt-12 p-8 border-4 border-base-content bg-base-200 rounded-none relative overflow-hidden group text-base-content">
-        <h2 className="text-2xl font-bold mb-6 text-center">Showcase de Animações</h2>
-        
-        <div className="flex justify-center gap-8 flex-wrap">
-            {/* Bouncing Ball */}
-            <div className="w-16 h-16 bg-primary border-2 border-base-content animate-bounce flex items-center justify-center text-primary-content font-bold shadow-[4px_4px_0_0_currentColor]">
-                8-BIT
-            </div>
-
-            {/* Spinning Square */}
-            <div className="w-16 h-16 bg-secondary border-2 border-base-content animate-spin flex items-center justify-center text-secondary-content font-bold shadow-[4px_4px_0_0_currentColor]">
-                PIXEL
-            </div>
-
-            {/* Pulse Circle */}
-            <div className="w-16 h-16 bg-accent border-2 border-base-content animate-pulse rounded-full flex items-center justify-center text-accent-content font-bold shadow-[4px_4px_0_0_currentColor]">
-                DEV
-            </div>
-        </div>
-        
-        <p className="text-center mt-8 text-sm opacity-70">
-            * Estas animações são renderizadas com CSS puro e Tailwind.
-        </p>
       </div>
 
       {/* Back Button */}
