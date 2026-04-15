@@ -25,6 +25,7 @@ export default function SoftwareFeature() {
             <p>Finanças pessoais com gamificação, orçamento 50/30/20, importação de NF-e, sync P2P criptografado e assistente IA.</p>
             <div className="card-actions justify-end mt-4 flex-col gap-2">
                <a href="https://domus.expo.app/" target="_blank" rel="noopener noreferrer" className="btn btn-info btn-sm border-2 border-base-content rounded-none w-full">Ver Projeto</a>
+               <Link href="/domus/beta" className="btn btn-warning btn-sm border-2 border-base-content rounded-none w-full">🧪 Teste Beta</Link>
             </div>
           </div>
         </div>
