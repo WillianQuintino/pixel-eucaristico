@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { motion, AnimatePresence, type PanInfo } from "framer-motion";
+import { motion, AnimatePresence, type PanInfo, type Variants } from "framer-motion";
 import Image from "next/image";
 import { SCREENSHOTS } from "./screenshots";
 
@@ -130,7 +130,7 @@ function Dots({ active, onSelect }: { active: number; onSelect: (i: number) => v
 
 // ─── Carousel ─────────────────────────────────────────────────────────────────
 
-const SLIDE = {
+const SLIDE: Variants = {
   enter: (dir: number) => ({
     x: dir > 0 ? 320 : -320,
     scale: 0.78,
@@ -143,10 +143,10 @@ const SLIDE = {
     opacity: 1,
     rotateY: 0,
     transition: {
-      x:        { type: "spring", stiffness: 260, damping: 28 },
-      scale:    { type: "spring", stiffness: 260, damping: 28 },
-      rotateY:  { type: "spring", stiffness: 260, damping: 28 },
-      opacity:  { duration: 0.18 },
+      x:       { type: "spring" as const, stiffness: 260, damping: 28 },
+      scale:   { type: "spring" as const, stiffness: 260, damping: 28 },
+      rotateY: { type: "spring" as const, stiffness: 260, damping: 28 },
+      opacity: { duration: 0.18 },
     },
   },
   exit: (dir: number) => ({
@@ -155,7 +155,7 @@ const SLIDE = {
     opacity: 0,
     rotateY: dir > 0 ? -20 : 20,
     transition: {
-      x:       { type: "spring", stiffness: 260, damping: 28 },
+      x:       { type: "spring" as const, stiffness: 260, damping: 28 },
       scale:   { duration: 0.22 },
       opacity: { duration: 0.18 },
     },
