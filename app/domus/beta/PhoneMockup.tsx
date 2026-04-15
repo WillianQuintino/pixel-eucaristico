@@ -275,8 +275,8 @@ export default function PhoneCarousel() {
           onPanEnd={onPanEnd}
         />
 
-        {/* phones track — positioned absolutely, left=0 */}
-        <div className="absolute top-0 left-0 h-full" style={{ width: TOTAL * SLOT }}>
+        {/* phones track — translates with displayX so phones scroll into view */}
+        <motion.div className="absolute top-0 left-0 h-full" style={{ width: TOTAL * SLOT, x: displayX }}>
           {SCREENSHOTS.map((_, i) => (
             <CoverPhone
               key={i}
@@ -286,7 +286,7 @@ export default function PhoneCarousel() {
               onClick={goTo}
             />
           ))}
-        </div>
+        </motion.div>
 
         {/* edge vignette */}
         <div
