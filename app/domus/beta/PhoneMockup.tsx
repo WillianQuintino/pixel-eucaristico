@@ -1,116 +1,168 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { motion, AnimatePresence, type PanInfo, type Variants } from "framer-motion";
+import {
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+} from "react";
+import {
+  motion,
+  useMotionValue,
+  useTransform,
+  animate,
+  type MotionValue,
+  type PanInfo,
+} from "framer-motion";
 import Image from "next/image";
 import { SCREENSHOTS } from "./screenshots";
 
-const TOTAL = SCREENSHOTS.length;
-const DRAG_THRESHOLD = 60; // px to trigger navigation
+// ─── constants ────────────────────────────────────────────────────────────────
+const TOTAL      = SCREENSHOTS.length;
+const PHONE_W    = 180;          // px — phone width
+const PHONE_H    = PHONE_W / (9 / 19.5); // ≈ 390 px
+const GAP        = 24;           // gap between phones
+const SLOT       = PHONE_W + GAP;
+const DRAG_VEL   = 150;          // px/s min velocity to flip
+const DRAG_DIST  = 50;           // px min distance to flip
+const AUTO_MS    = 3400;         // auto-advance interval
 
-// ─── Phone frame ──────────────────────────────────────────────────────────────
+// ─── spring preset ────────────────────────────────────────────────────────────
+const SPRING = { type: "spring" as const, stiffness: 280, damping: 32, mass: 0.9 };
 
-function PhoneFrame({
+// ─── helpers ─────────────────────────────────────────────────────────────────
+function targetX(idx: number, cw: number) {
+  return cw / 2 - PHONE_W / 2 - idx * SLOT;
+}
+
+// ─── per-phone animated wrapper ───────────────────────────────────────────────
+// Uses a shared displayX motion value + container width to compute
+// each phone's rotateY / scale / opacity / z continuously (even during drag).
+function CoverPhone({
   index,
-  priority = false,
+  displayX,
+  cwMV,
+  onClick,
 }: {
-  index: number;
-  priority?: boolean;
+  index:    number;
+  displayX: MotionValue<number>;
+  cwMV:     MotionValue<number>;
+  onClick:  (index: number) => void;
 }) {
-  const shot = SCREENSHOTS[((index % TOTAL) + TOTAL) % TOTAL];
-  const [loaded, setLoaded] = useState(false);
-  const [imgError, setImgError] = useState(false);
-
-  return (
-    <div className="relative flex-shrink-0 w-[185px]" style={{ aspectRatio: "9/19.5" }}>
-      {/* Phone body */}
-      <div
-        className="absolute inset-0 rounded-[2.8rem] bg-base-content"
-        style={{
-          boxShadow:
-            "inset 0 0 0 2px color-mix(in oklab, var(--color-base-100) 20%, transparent), 0 30px 60px -10px color-mix(in oklab, var(--color-base-content) 35%, transparent)",
-        }}
-      />
-
-      {/* Side buttons */}
-      <div className="absolute -left-[5px] top-[20%]  w-[5px] h-7  bg-base-content rounded-l-sm opacity-80" />
-      <div className="absolute -left-[5px] top-[30%]  w-[5px] h-10 bg-base-content rounded-l-sm opacity-80" />
-      <div className="absolute -left-[5px] top-[43%]  w-[5px] h-10 bg-base-content rounded-l-sm opacity-80" />
-      <div className="absolute -right-[5px] top-[28%] w-[5px] h-14 bg-base-content rounded-r-sm opacity-80" />
-
-      {/* Screen */}
-      <div className="absolute inset-[5px] rounded-[2.4rem] overflow-hidden bg-[#0E0C08]">
-        {/* Dynamic island */}
-        <div className="absolute top-[10px] left-1/2 -translate-x-1/2 z-20 w-[52px] h-[14px] bg-base-content rounded-full" />
-
-        {/* Screenshot */}
-        {!imgError && (
-          <Image
-            src={shot.file}
-            alt={shot.label}
-            fill
-            priority={priority}
-            className={`object-cover object-top select-none pointer-events-none transition-opacity duration-500 ${
-              loaded ? "opacity-100" : "opacity-0"
-            }`}
-            onLoad={() => setLoaded(true)}
-            onError={() => setImgError(true)}
-            sizes="185px"
-            draggable={false}
-          />
-        )}
-
-        {/* Placeholder */}
-        {(!loaded || imgError) && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 px-4 text-center">
-            <span className="text-3xl opacity-20">📱</span>
-            <p className="text-[9px] text-base-content/30 leading-relaxed whitespace-pre-line">
-              {imgError ? `public${shot.file}` : ""}
-            </p>
-          </div>
-        )}
-
-        {/* Screen glare */}
-        <div
-          className="absolute inset-0 pointer-events-none rounded-[2.4rem]"
-          style={{
-            background:
-              "linear-gradient(135deg, color-mix(in oklab, white 8%, transparent) 0%, transparent 50%)",
-          }}
-        />
-
-        {/* Home bar */}
-        <div className="absolute bottom-[8px] left-1/2 -translate-x-1/2 w-[72px] h-[4px] bg-base-content/25 rounded-full" />
-      </div>
-    </div>
-  );
-}
-
-// ─── Caption ──────────────────────────────────────────────────────────────────
-
-function Caption({ index }: { index: number }) {
   const shot = SCREENSHOTS[index];
+  const [loaded, setLoaded] = useState(false);
+  const [imgErr, setImgErr] = useState(false);
+
+  // distance from viewport centre, in slot-units
+  const distSlots = useTransform(
+    [displayX, cwMV] as MotionValue<number>[],
+    ([x, cw]: number[]) => (x + index * SLOT + PHONE_W / 2 - cw / 2) / SLOT,
+  );
+
+  const rotateY = useTransform(distSlots, [-2.5, -1, 0, 1, 2.5], [40, 22,  0, -22, -40]);
+  const scale   = useTransform(distSlots, [-2,   -1, 0, 1, 2  ], [0.62, 0.78, 1, 0.78, 0.62]);
+  const opacity = useTransform(distSlots, [-2,   -1, 0, 1, 2  ], [0,   0.45, 1, 0.45, 0  ]);
+  const zIdx    = useTransform(distSlots, (d) => Math.round(10 - Math.abs(d) * 4));
+
   return (
-    <AnimatePresence mode="wait">
-      <motion.div
-        key={index}
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -8 }}
-        transition={{ duration: 0.22, ease: "easeOut" }}
-        className="text-center h-12 flex flex-col items-center justify-center"
+    <motion.div
+      className="absolute top-0 cursor-pointer select-none"
+      style={{
+        left:    index * SLOT,
+        width:   PHONE_W,
+        rotateY,
+        scale,
+        opacity,
+        zIndex:  zIdx,
+        transformOrigin: "center center",
+      }}
+      onClick={() => onClick(index)}
+    >
+      {/* ── phone shell ── */}
+      <div
+        className="relative w-full rounded-[2.6rem] bg-base-content"
+        style={{
+          height: PHONE_H,
+          boxShadow:
+            "0 28px 56px -8px color-mix(in oklab,var(--color-base-content) 30%,transparent)," +
+            "inset 0 0 0 2px color-mix(in oklab,white 12%,transparent)",
+        }}
       >
-        <p className="text-sm font-bold text-base-content">{shot.label}</p>
-        <p className="text-[11px] text-base-content/50 mt-0.5 max-w-[220px] leading-snug">
-          {shot.desc}
-        </p>
-      </motion.div>
-    </AnimatePresence>
+        {/* side buttons */}
+        <div className="absolute -left-[5px] top-[20%] w-[5px] h-7  bg-base-content rounded-l-sm opacity-70" />
+        <div className="absolute -left-[5px] top-[30%] w-[5px] h-10 bg-base-content rounded-l-sm opacity-70" />
+        <div className="absolute -left-[5px] top-[43%] w-[5px] h-10 bg-base-content rounded-l-sm opacity-70" />
+        <div className="absolute -right-[5px] top-[28%] w-[5px] h-14 bg-base-content rounded-r-sm opacity-70" />
+
+        {/* screen */}
+        <div className="absolute inset-[5px] rounded-[2.2rem] overflow-hidden bg-[#0E0C08]">
+          {/* dynamic island */}
+          <div className="absolute top-[10px] left-1/2 -translate-x-1/2 z-20
+                          w-[50px] h-[14px] bg-base-content rounded-full" />
+
+          {!imgErr && (
+            <Image
+              src={shot.file}
+              alt={shot.label}
+              fill
+              className={`object-cover object-top pointer-events-none select-none
+                          transition-opacity duration-500 ${loaded ? "opacity-100" : "opacity-0"}`}
+              onLoad={() => setLoaded(true)}
+              onError={() => setImgErr(true)}
+              sizes={`${PHONE_W}px`}
+              draggable={false}
+            />
+          )}
+
+          {/* placeholder */}
+          {(!loaded || imgErr) && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 px-4 text-center">
+              <span className="text-3xl opacity-20">📱</span>
+              {imgErr && (
+                <p className="text-[9px] text-base-content/25 leading-relaxed break-all">
+                  public{shot.file}
+                </p>
+              )}
+            </div>
+          )}
+
+          {/* screen glare */}
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background:
+                "linear-gradient(135deg,color-mix(in oklab,white 9%,transparent) 0%,transparent 45%)",
+            }}
+          />
+          {/* home bar */}
+          <div className="absolute bottom-[7px] left-1/2 -translate-x-1/2
+                          w-[68px] h-[4px] bg-base-content/25 rounded-full" />
+        </div>
+      </div>
+    </motion.div>
   );
 }
 
-// ─── Dots ─────────────────────────────────────────────────────────────────────
+// ─── caption ─────────────────────────────────────────────────────────────────
+function Caption({ active }: { active: number }) {
+  const shot = SCREENSHOTS[active];
+  return (
+    <motion.div
+      key={active}
+      initial={{ opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.22 }}
+      className="text-center h-11 flex flex-col items-center justify-center"
+    >
+      <p className="text-sm font-bold text-base-content">{shot.label}</p>
+      <p className="text-[11px] text-base-content/50 mt-0.5 max-w-[220px] leading-snug">
+        {shot.desc}
+      </p>
+    </motion.div>
+  );
+}
 
+// ─── dots ─────────────────────────────────────────────────────────────────────
 function Dots({ active, onSelect }: { active: number; onSelect: (i: number) => void }) {
   return (
     <div className="flex justify-center gap-1.5">
@@ -121,174 +173,149 @@ function Dots({ active, onSelect }: { active: number; onSelect: (i: number) => v
           onClick={() => onSelect(i)}
           animate={{ width: i === active ? 20 : 8, opacity: i === active ? 1 : 0.3 }}
           transition={{ type: "spring", stiffness: 400, damping: 30 }}
-          className="h-2 rounded-full bg-warning origin-left"
+          className="h-2 rounded-full bg-warning"
         />
       ))}
     </div>
   );
 }
 
-// ─── Carousel ─────────────────────────────────────────────────────────────────
-
-const SLIDE: Variants = {
-  enter: (dir: number) => ({
-    x: dir > 0 ? 320 : -320,
-    scale: 0.78,
-    opacity: 0,
-    rotateY: dir > 0 ? 20 : -20,
-  }),
-  center: {
-    x: 0,
-    scale: 1,
-    opacity: 1,
-    rotateY: 0,
-    transition: {
-      x:       { type: "spring" as const, stiffness: 260, damping: 28 },
-      scale:   { type: "spring" as const, stiffness: 260, damping: 28 },
-      rotateY: { type: "spring" as const, stiffness: 260, damping: 28 },
-      opacity: { duration: 0.18 },
-    },
-  },
-  exit: (dir: number) => ({
-    x: dir > 0 ? -260 : 260,
-    scale: 0.78,
-    opacity: 0,
-    rotateY: dir > 0 ? -20 : 20,
-    transition: {
-      x:       { type: "spring" as const, stiffness: 260, damping: 28 },
-      scale:   { duration: 0.22 },
-      opacity: { duration: 0.18 },
-    },
-  }),
-};
-
+// ─── main carousel ────────────────────────────────────────────────────────────
 export default function PhoneCarousel() {
-  const [[active, dir], setPage] = useState([0, 0]);
-  const [paused, setPaused] = useState(false);
+  const [active,  setActive]  = useState(0);
+  const [paused,  setPaused]  = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  const go = useCallback(
-    (newIndex: number, direction: number) => {
-      setPage([((newIndex % TOTAL) + TOTAL) % TOTAL, direction]);
+  // Shared motion values
+  const displayX = useMotionValue(0);
+  const cwMV     = useMotionValue(600);
+
+  // Measure container width and keep cwMV in sync
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([e]) => cwMV.set(e.contentRect.width));
+    ro.observe(el);
+    cwMV.set(el.offsetWidth);
+    return () => ro.disconnect();
+  }, [cwMV]);
+
+  // Snap displayX to a given index (with spring)
+  const snapTo = useCallback(
+    (idx: number) => {
+      animate(displayX, targetX(idx, cwMV.get()), SPRING);
     },
-    []
+    [displayX, cwMV],
   );
 
-  const next = useCallback(() => go(active + 1, 1), [active, go]);
-  const prev = useCallback(() => go(active - 1, -1), [active, go]);
+  // Initialise position
+  useEffect(() => { snapTo(0); }, [snapTo]);
+
+  // Navigate
+  const goTo = useCallback(
+    (idx: number) => {
+      const next = ((idx % TOTAL) + TOTAL) % TOTAL;
+      setActive(next);
+      snapTo(next);
+    },
+    [snapTo],
+  );
+
+  const goNext = useCallback(() => goTo(active + 1), [active, goTo]);
+  const goPrev = useCallback(() => goTo(active - 1), [active, goTo]);
 
   // Auto-advance
   useEffect(() => {
     if (paused) return;
-    const t = setTimeout(next, 3200);
+    const t = setTimeout(goNext, AUTO_MS);
     return () => clearTimeout(t);
-  }, [active, paused, next]);
+  }, [active, paused, goNext]);
 
-  function onDragEnd(_: unknown, info: PanInfo) {
-    if (info.offset.x < -DRAG_THRESHOLD) next();
-    else if (info.offset.x > DRAG_THRESHOLD) prev();
+  // ── pan handlers (live drag, no spring lag) ──────────────────────────────────
+  const baseXRef = useRef(0);
+
+  function onPanStart() {
+    setPaused(true);
+    baseXRef.current = targetX(active, cwMV.get());
   }
 
-  const prevIdx = ((active - 1) + TOTAL) % TOTAL;
-  const nextIdx = (active + 1) % TOTAL;
+  function onPan(_: unknown, info: PanInfo) {
+    // Follow finger 1:1 — no spring during drag
+    displayX.set(baseXRef.current + info.offset.x);
+  }
+
+  function onPanEnd(_: unknown, info: PanInfo) {
+    const flip =
+      Math.abs(info.velocity.x) > DRAG_VEL ||
+      Math.abs(info.offset.x)   > DRAG_DIST;
+    if (flip && info.offset.x < 0) goNext();
+    else if (flip && info.offset.x > 0) goPrev();
+    else snapTo(active); // snap back
+    // resume auto-advance after a pause
+    setTimeout(() => setPaused(false), 2000);
+  }
 
   return (
     <div
-      className="flex flex-col items-center gap-6 select-none"
+      className="flex flex-col items-center gap-5 select-none"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      {/* Stage */}
+      {/* ── viewport ── */}
       <div
+        ref={containerRef}
         className="relative w-full overflow-hidden"
-        style={{ height: 430, perspective: "1000px" }}
+        style={{ height: PHONE_H + 8, perspective: "900px" }}
       >
-        {/* Left peek */}
-        <div
-          className="absolute top-0 pointer-events-none"
-          style={{
-            left: "calc(50% - 310px)",
-            transform: "scale(0.72) rotateY(28deg)",
-            transformOrigin: "right center",
-            opacity: 0.25,
-            filter: "blur(1px)",
-          }}
-        >
-          <PhoneFrame index={prevIdx} />
+        {/* draggable invisible overlay — captures pan without fighting clicks */}
+        <motion.div
+          className="absolute inset-0 z-30 cursor-grab active:cursor-grabbing"
+          onPanStart={onPanStart}
+          onPan={onPan}
+          onPanEnd={onPanEnd}
+        />
+
+        {/* phones track — positioned absolutely, left=0 */}
+        <div className="absolute top-0 left-0 h-full" style={{ width: TOTAL * SLOT }}>
+          {SCREENSHOTS.map((_, i) => (
+            <CoverPhone
+              key={i}
+              index={i}
+              displayX={displayX}
+              cwMV={cwMV}
+              onClick={goTo}
+            />
+          ))}
         </div>
 
-        {/* Right peek */}
+        {/* edge vignette */}
         <div
-          className="absolute top-0 pointer-events-none"
-          style={{
-            left: "calc(50% + 125px)",
-            transform: "scale(0.72) rotateY(-28deg)",
-            transformOrigin: "left center",
-            opacity: 0.25,
-            filter: "blur(1px)",
-          }}
-        >
-          <PhoneFrame index={nextIdx} />
-        </div>
-
-        {/* Center — animated */}
-        <div
-          className="absolute top-0 left-1/2 -translate-x-1/2"
-          style={{ perspective: "800px" }}
-        >
-          <AnimatePresence initial={false} custom={dir} mode="popLayout">
-            <motion.div
-              key={active}
-              custom={dir}
-              variants={SLIDE}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              drag="x"
-              dragConstraints={{ left: 0, right: 0 }}
-              dragElastic={0.12}
-              onDragEnd={onDragEnd}
-              className="cursor-grab active:cursor-grabbing"
-              style={{ willChange: "transform" }}
-            >
-              <PhoneFrame index={active} priority />
-            </motion.div>
-          </AnimatePresence>
-        </div>
-
-        {/* Gradient vignette on sides */}
-        <div
-          className="absolute inset-y-0 left-0 w-20 pointer-events-none"
-          style={{
-            background:
-              "linear-gradient(to right, var(--color-base-200, #f2f2f0), transparent)",
-          }}
+          className="absolute inset-y-0 left-0 w-24 pointer-events-none z-20"
+          style={{ background: "linear-gradient(to right, var(--color-base-200,#eee) 10%, transparent)" }}
         />
         <div
-          className="absolute inset-y-0 right-0 w-20 pointer-events-none"
-          style={{
-            background:
-              "linear-gradient(to left, var(--color-base-200, #f2f2f0), transparent)",
-          }}
+          className="absolute inset-y-0 right-0 w-24 pointer-events-none z-20"
+          style={{ background: "linear-gradient(to left, var(--color-base-200,#eee) 10%, transparent)" }}
         />
       </div>
 
-      {/* Caption */}
-      <Caption index={active} />
+      {/* ── caption ── */}
+      <Caption active={active} />
 
-      {/* Controls */}
+      {/* ── controls ── */}
       <div className="flex items-center gap-4">
         <button
-          onClick={prev}
+          onClick={goPrev}
           aria-label="Anterior"
-          className="btn btn-xs btn-ghost border border-base-content/20 rounded-none w-8 h-8 p-0 text-base"
+          className="btn btn-xs btn-ghost border border-base-content/20 rounded-none w-8 h-8 p-0"
         >
           ←
         </button>
-        <Dots active={active} onSelect={(i) => go(i, i > active ? 1 : -1)} />
+        <Dots active={active} onSelect={goTo} />
         <button
-          onClick={next}
+          onClick={goNext}
           aria-label="Próximo"
-          className="btn btn-xs btn-ghost border border-base-content/20 rounded-none w-8 h-8 p-0 text-base"
+          className="btn btn-xs btn-ghost border border-base-content/20 rounded-none w-8 h-8 p-0"
         >
           →
         </button>
