@@ -79,31 +79,36 @@ const FEATURES = [
 
 const FEEDBACK_TIPOS: {
   value: FeedbackTipo;
+  icon: string; // Novo campo para o emoji
   label: string;
   activeCls: string;
   btnCls: string;
 }[] = [
   {
     value: "bug",
-    label: "🐛 Bug",
+    icon: "🐛",
+    label: "Bug",
     activeCls: "bg-error/15 border-error text-error",
     btnCls: "btn-error",
   },
   {
     value: "melhoria",
-    label: "✨ Melhoria",
+    icon: "✨",
+    label: "Melhoria",
     activeCls: "bg-success/15 border-success text-success",
     btnCls: "btn-success",
   },
   {
     value: "sugestao",
-    label: "💡 Sugestão",
+    icon: "💡",
+    label: "Sugestão",
     activeCls: "bg-warning/15 border-warning text-warning",
     btnCls: "btn-warning",
   },
   {
     value: "elogio",
-    label: "🙌 Elogio",
+    icon: "🙌",
+    label: "Elogio",
     activeCls: "bg-secondary/15 border-secondary text-secondary",
     btnCls: "btn-secondary",
   },
@@ -419,13 +424,16 @@ function FeedbackFormComponent() {
               key={t.value}
               type="button"
               onClick={() => set("tipo", t.value)}
-              className={`rounded-xl py-2.5 px-3 text-xs font-semibold border transition-all ${
+              className={`flex flex-col items-center justify-center gap-2 rounded-none border-2 transition-all p-3 ${
                 form.tipo === t.value
-                  ? t.activeCls
+                  ? `${t.activeCls} border-base-content shadow-[2px_2px_0_0_currentColor]`
                   : "bg-base-100 border-base-content/20 text-base-content/50 hover:border-base-content/40"
               }`}
             >
-              {t.label}
+              <span className="text-2xl">{t.icon}</span>
+              <span className="text-[10px] font-bold uppercase tracking-widest">
+                {t.label}
+              </span>
             </button>
           ))}
         </div>
