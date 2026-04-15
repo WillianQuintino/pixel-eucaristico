@@ -1,6 +1,9 @@
 "use client";
 
 import { useState, useId } from "react";
+import dynamic from "next/dynamic";
+
+const PhoneCarousel = dynamic(() => import("./PhoneMockup"), { ssr: false });
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -636,6 +639,19 @@ export default function DomusBetaClient() {
               </div>
             ))}
           </div>
+        </div>
+      </div>
+
+      {/* ── Screenshot carousel ────────────────────────────────── */}
+      <div className="bg-base-200 px-4 py-12 border-y border-base-content/10">
+        <div className="max-w-3xl mx-auto">
+          <p className="text-center text-xs font-bold tracking-widest uppercase mb-2 text-warning">
+            Veja o app em ação
+          </p>
+          <p className="text-center text-sm text-base-content/50 mb-10">
+            Clique nas telas ao lado para navegar
+          </p>
+          <PhoneCarousel />
         </div>
       </div>
 
