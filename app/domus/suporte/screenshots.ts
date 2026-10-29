@@ -13,7 +13,7 @@ export const SCREENSHOTS: Screenshot[] = [
   {
     file: "/images/domus/temporada.jpeg",
     label: "Temporada",
-    desc: "Trofeu do Santo do mês e conquistas desbloqueadas",
+    desc: "Troféu do Santo do mês e conquistas desbloqueadas",
   },
   {
     file: "/images/domus/contas.jpeg",
@@ -43,6 +43,6 @@ export const SCREENSHOTS: Screenshot[] = [
   {
     file: "/images/domus/sincronizar.jpeg",
     label: "Sincronizar",
-    desc: "Sync P2P entre dispositivos via Nostr com criptografia E2E",
+    desc: "Sincronização opcional entre aparelhos via relays Nostr",
   },
 ];

@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { DOMUS_PLAY_STORE_URL, DOMUS_SUPPORT_PATH } from "@/app/domus/links";
 
 export default function SoftwareFeature() {
   return (
@@ -25,7 +26,8 @@ export default function SoftwareFeature() {
             <p>Finanças pessoais com gamificação, orçamento 50/30/20, importação de NF-e, sync P2P criptografado e assistente IA.</p>
             <div className="card-actions justify-end mt-4 flex-col gap-2">
                <a href="https://domus.expo.app/" target="_blank" rel="noopener noreferrer" className="btn btn-info btn-sm border-2 border-base-content rounded-none w-full">Ver Projeto</a>
-               <Link href="/domus/beta" className="btn btn-warning btn-sm border-2 border-base-content rounded-none w-full">🧪 Teste Beta</Link>
+               <a href={DOMUS_PLAY_STORE_URL} target="_blank" rel="noopener noreferrer" className="btn btn-success btn-sm border-2 border-base-content rounded-none w-full">▶ Baixar no Google Play</a>
+               <Link href={DOMUS_SUPPORT_PATH} className="btn btn-warning btn-sm border-2 border-base-content rounded-none w-full">💬 Suporte</Link>
             </div>
           </div>
         </div>

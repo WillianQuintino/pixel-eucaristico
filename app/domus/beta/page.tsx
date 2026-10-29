@@ -1,18 +1,8 @@
-import type { Metadata } from "next";
-import DomusBetaClient from "./DomusBetaClient";
+import { permanentRedirect } from "next/navigation";
+import { DOMUS_SUPPORT_PATH } from "../links";
 
-export const metadata: Metadata = {
-  title: "Teste Beta — DOMUS",
-  description:
-    "Inscreva-se para testar o DOMUS em primeira mão. App de finanças pessoais 100% local com scanner de NF, IA financeira e sincronização P2P criptografada.",
-  openGraph: {
-    title: "DOMUS Beta — Seja um dos primeiros testadores",
-    description:
-      "Controle financeiro completo no seu dispositivo. Scanner de NF, IA, sync P2P e backup AES-256. Sem servidor central. Inscreva-se no teste fechado.",
-    type: "website",
-  },
-};
-
+// O DOMUS saiu do teste fechado e está publicado no Google Play.
+// O endereço antigo do beta leva à página de suporte.
 export default function DomusBetaPage() {
-  return <DomusBetaClient />;
+  permanentRedirect(DOMUS_SUPPORT_PATH);
 }
