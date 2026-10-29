@@ -1,26 +1,25 @@
 "use client";
 
-import { useState, useId } from "react";
+import { useState, useId, useRef } from "react";
 import dynamic from "next/dynamic";
 import { FaGooglePlay } from "react-icons/fa";
 import { DOMUS_CONTACT_EMAIL as CONTACT_EMAIL, DOMUS_PLAY_STORE_URL } from "../links";
+import {
+  HONEYPOT_FIELD,
+  LIMITS,
+  MIN_MENSAGEM,
+  codePointLength,
+  validateFeedback,
+  type FeedbackPayload,
+  type Tipo,
+} from "./feedbackContract";
 
 const PhoneCarousel = dynamic(() => import("./PhoneMockup"), { ssr: false });
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
-type Tipo = "bug" | "sugestao" | "contato";
-
-interface SupportForm {
-  nome: string;
-  email: string;
-  tipo: Tipo | "";
-  mensagem: string;
-  versao_app: string;
-  dispositivo: string;
-  /** Honeypot: escondido para pessoas, preenchido só por robôs. */
-  website: string;
-}
+/** Campos do formulário; o campo-armadilha (honeypot) fica escondido para pessoas. */
+type SupportForm = FeedbackPayload;
 
 type FormState = "idle" | "loading" | "success" | "error";
 
@@ -31,10 +30,8 @@ const EMPTY_FORM: SupportForm = {
   mensagem: "",
   versao_app: "",
   dispositivo: "",
-  website: "",
+  [HONEYPOT_FIELD]: "",
 };
-
-const MIN_MENSAGEM = 10;
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
@@ -206,6 +203,8 @@ function SupportFormComponent() {
   const [form, setForm] = useState<SupportForm>(EMPTY_FORM);
   const [state, setState] = useState<FormState>("idle");
   const [errorMsg, setErrorMsg] = useState("");
+  /** Trava contra envio duplo no mesmo quadro (antes de o estado "loading" renderizar). */
+  const submittingRef = useRef(false);
 
   const selectedTipo = TIPOS.find((t) => t.value === form.tipo);
   const isBug = form.tipo === "bug";
@@ -216,15 +215,29 @@ function SupportFormComponent() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!form.tipo) {
-      setErrorMsg("Escolha o tipo de mensagem.");
+    if (submittingRef.current) return;
+
+    const trimmed: SupportForm = {
+      nome: form.nome.trim(),
+      email: form.email.trim(),
+      tipo: form.tipo,
+      mensagem: form.mensagem.trim(),
+      versao_app: isBug ? form.versao_app.trim() : "",
+      dispositivo: isBug ? form.dispositivo.trim() : "",
+      [HONEYPOT_FIELD]: form[HONEYPOT_FIELD],
+    };
+    const invalid = validateFeedback(trimmed);
+    if (invalid) {
+      setErrorMsg(invalid);
       setState("error");
       return;
     }
+
+    submittingRef.current = true;
     setState("loading");
     setErrorMsg("");
     try {
-      const payload = isBug ? form : { ...form, versao_app: "", dispositivo: "" };
+      const payload = trimmed;
       const res = await fetch("/api/domus/feedback", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -247,6 +260,8 @@ function SupportFormComponent() {
     } catch {
       setErrorMsg("Erro de rede. Verifique sua conexão e tente novamente.");
       setState("error");
+    } finally {
+      submittingRef.current = false;
     }
   }
 
@@ -310,7 +325,7 @@ function SupportFormComponent() {
             autoComplete="name"
             value={form.nome}
             onChange={(e) => set("nome", e.target.value)}
-            maxLength={100}
+            maxLength={LIMITS.nome}
           />
         </Field>
 
@@ -324,7 +339,7 @@ function SupportFormComponent() {
             value={form.email}
             onChange={(e) => set("email", e.target.value)}
             required
-            maxLength={200}
+            maxLength={LIMITS.email}
           />
         </Field>
       </div>
@@ -333,7 +348,7 @@ function SupportFormComponent() {
         label={isBug ? "Descreva o problema" : "Mensagem"}
         htmlFor={`${baseId}-mensagem`}
         required
-        hint={`${form.mensagem.length} / ${MIN_MENSAGEM} mín.`}
+        hint={`${codePointLength(form.mensagem.trim())} / ${MIN_MENSAGEM} mín.`}
       >
         <textarea
           id={`${baseId}-mensagem`}
@@ -343,8 +358,6 @@ function SupportFormComponent() {
           value={form.mensagem}
           onChange={(e) => set("mensagem", e.target.value)}
           required
-          minLength={MIN_MENSAGEM}
-          maxLength={5000}
         />
       </Field>
 
@@ -358,7 +371,7 @@ function SupportFormComponent() {
               placeholder="Ex.: 1.0.3 (em Sobre, no app)"
               value={form.versao_app}
               onChange={(e) => set("versao_app", e.target.value)}
-              maxLength={40}
+              maxLength={LIMITS.versao_app}
             />
           </Field>
 
@@ -370,22 +383,24 @@ function SupportFormComponent() {
               placeholder="Ex.: Galaxy A54, Android 14"
               value={form.dispositivo}
               onChange={(e) => set("dispositivo", e.target.value)}
-              maxLength={120}
+              maxLength={LIMITS.dispositivo}
             />
           </Field>
         </div>
       )}
 
-      {/* Honeypot: fora da tela para pessoas; robôs costumam preencher. */}
+      {/* Honeypot: fora da tela para pessoas; robôs costumam preencher.
+          Nome neutro e autoComplete="new-password" para o navegador não preencher sozinho. */}
       <div aria-hidden="true" className="absolute -left-[10000px] w-px h-px overflow-hidden">
-        <label htmlFor={`${baseId}-website`}>Não preencha este campo</label>
+        <label htmlFor={`${baseId}-${HONEYPOT_FIELD}`}>Não preencha este campo</label>
         <input
-          id={`${baseId}-website`}
+          id={`${baseId}-${HONEYPOT_FIELD}`}
+          name={HONEYPOT_FIELD}
           type="text"
           tabIndex={-1}
-          autoComplete="off"
-          value={form.website}
-          onChange={(e) => set("website", e.target.value)}
+          autoComplete="new-password"
+          value={form[HONEYPOT_FIELD]}
+          onChange={(e) => set(HONEYPOT_FIELD, e.target.value)}
         />
       </div>
 

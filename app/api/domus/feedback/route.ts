@@ -1,13 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import nodemailer from "nodemailer";
+import {
+  HONEYPOT_FIELD,
+  type Tipo,
+  truncateCodePoints,
+  validateFeedback,
+} from "../../../domus/suporte/feedbackContract";
 
 export const runtime = "nodejs";
 
 // Formulário de suporte do DOMUS (/domus/suporte): relato de bug, sugestão ou contato.
 // Envia um e-mail pelo SMTP configurado nas variáveis de ambiente do servidor.
-
-const TIPOS = ["bug", "sugestao", "contato"] as const;
-type Tipo = (typeof TIPOS)[number];
 
 const TIPO_LABELS: Record<Tipo, string> = {
   bug: "🐛 Bug",
@@ -21,16 +24,6 @@ const TIPO_COLORS: Record<Tipo, string> = {
   contato: "#14B8A6",
 };
 
-const LIMITS = {
-  nome: 100,
-  email: 200,
-  mensagem: 5000,
-  versao_app: 40,
-  dispositivo: 120,
-} as const;
-
-const MIN_MENSAGEM = 10;
-
 interface FeedbackBody {
   nome?: string;
   email: string;
@@ -39,39 +32,122 @@ interface FeedbackBody {
   versao_app?: string;
   dispositivo?: string;
   /** Honeypot: campo escondido que só robôs preenchem. */
-  website?: string;
+  armadilha?: string;
 }
 
 const UNAVAILABLE_MSG =
   "O envio pelo formulário está indisponível no momento. Tente de novo mais tarde.";
+const INVALID_BODY_MSG = "Corpo da requisição inválido.";
+const TOO_LARGE_MSG = "Mensagem grande demais para enviar pelo formulário.";
 
 // ─── Rate limit (best effort, por instância do servidor) ───────────────────────
 
 const RATE_WINDOW_MS = 10 * 60 * 1000;
 const RATE_MAX = 5;
+const MAX_TRACKED_IPS = 5000;
+/** Envios concluídos com sucesso, por IP. Ordem de inserção = mais antigo primeiro. */
 const hits = new Map<string, number[]>();
+/** Envios em andamento, por IP, para que rajadas paralelas não furem o limite. */
+const inFlight = new Map<string, number>();
+
+function recentHits(ip: string, now: number): number[] {
+  const recent = (hits.get(ip) ?? []).filter((t) => now - t < RATE_WINDOW_MS);
+  if (recent.length) hits.set(ip, recent);
+  else hits.delete(ip);
+  return recent;
+}
 
 function rateLimited(ip: string): boolean {
+  return recentHits(ip, Date.now()).length + (inFlight.get(ip) ?? 0) >= RATE_MAX;
+}
+
+/** Conta um envio só depois de o e-mail sair com sucesso. */
+function recordHit(ip: string): void {
   const now = Date.now();
-  const recent = (hits.get(ip) ?? []).filter((t) => now - t < RATE_WINDOW_MS);
-  if (recent.length >= RATE_MAX) {
-    hits.set(ip, recent);
-    return true;
-  }
+  const recent = recentHits(ip, now);
   recent.push(now);
+  hits.delete(ip); // reinsere no fim: a ordem do Map vira "menos recente primeiro"
   hits.set(ip, recent);
-  if (hits.size > 5000) {
+  if (hits.size > MAX_TRACKED_IPS) {
     for (const [key, times] of hits) {
       if (times.every((t) => now - t >= RATE_WINDOW_MS)) hits.delete(key);
     }
+    for (const key of hits.keys()) {
+      if (hits.size <= MAX_TRACKED_IPS) break;
+      hits.delete(key);
+    }
   }
-  return false;
 }
 
-function clientIp(req: NextRequest): string {
+let warnedNoIp = false;
+
+/**
+ * IP do cliente. Na Vercel, `x-vercel-forwarded-for` e `x-real-ip` vêm do proxy
+ * e não podem ser forjados; o primeiro valor do `x-forwarded-for` vem do cliente,
+ * então só o último (acrescentado pelo proxy mais próximo) é usado.
+ */
+function clientIp(req: NextRequest): string | null {
+  const vercel = req.headers.get("x-vercel-forwarded-for")?.split(",")[0]?.trim();
+  if (vercel) return vercel;
+  const real = req.headers.get("x-real-ip")?.trim();
+  if (real) return real;
   const forwarded = req.headers.get("x-forwarded-for");
-  if (forwarded) return forwarded.split(",")[0].trim();
-  return req.headers.get("x-real-ip") ?? "desconhecido";
+  if (forwarded) {
+    const last = forwarded.split(",").map((v) => v.trim()).filter(Boolean).pop();
+    if (last) return last;
+  }
+  if (!warnedNoIp) {
+    warnedNoIp = true;
+    console.warn(
+      "[DOMUS Suporte] Requisição sem IP do cliente (x-vercel-forwarded-for, x-real-ip, x-forwarded-for); limite por IP desativado para esses pedidos."
+    );
+  }
+  return null;
+}
+
+// ─── Corpo com teto de tamanho ─────────────────────────────────────────────────
+
+const MAX_BODY_BYTES = 16 * 1024;
+
+type BodyResult = { ok: true; text: string } | { ok: false; status: 400 | 413 };
+
+async function readBodyCapped(req: NextRequest): Promise<BodyResult> {
+  const declared = req.headers.get("content-length");
+  if (declared !== null) {
+    const n = Number(declared);
+    if (!Number.isFinite(n) || n < 0) return { ok: false, status: 400 };
+    if (n > MAX_BODY_BYTES) return { ok: false, status: 413 };
+  }
+  if (!req.body) return { ok: true, text: "" };
+
+  const reader = req.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  try {
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      total += value.byteLength;
+      if (total > MAX_BODY_BYTES) {
+        await reader.cancel().catch(() => {});
+        return { ok: false, status: 413 };
+      }
+      chunks.push(value);
+    }
+  } catch {
+    return { ok: false, status: 400 };
+  }
+  const buf = new Uint8Array(total);
+  let offset = 0;
+  for (const c of chunks) {
+    buf.set(c, offset);
+    offset += c.byteLength;
+  }
+  try {
+    return { ok: true, text: new TextDecoder("utf-8", { fatal: true }).decode(buf) };
+  } catch {
+    return { ok: false, status: 400 };
+  }
 }
 
 // ─── Validação ─────────────────────────────────────────────────────────────────
@@ -88,28 +164,8 @@ function normalize(raw: Record<string, unknown>): FeedbackBody {
     mensagem: str(raw.mensagem),
     versao_app: str(raw.versao_app) || undefined,
     dispositivo: str(raw.dispositivo) || undefined,
-    website: str(raw.website) || undefined,
+    armadilha: str(raw[HONEYPOT_FIELD]) || undefined,
   };
-}
-
-function validate(body: FeedbackBody): string | null {
-  if (!TIPOS.includes(body.tipo)) return "Escolha o tipo de mensagem.";
-  if (body.nome && body.nome.length > LIMITS.nome) return "Nome muito longo.";
-  if (
-    !body.email ||
-    body.email.length > LIMITS.email ||
-    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email)
-  )
-    return "Informe um e-mail válido para podermos responder.";
-  if (body.mensagem.length < MIN_MENSAGEM)
-    return `A mensagem deve ter ao menos ${MIN_MENSAGEM} caracteres.`;
-  if (body.mensagem.length > LIMITS.mensagem)
-    return `A mensagem deve ter no máximo ${LIMITS.mensagem} caracteres.`;
-  if (body.versao_app && body.versao_app.length > LIMITS.versao_app)
-    return "Versão do app muito longa.";
-  if (body.dispositivo && body.dispositivo.length > LIMITS.dispositivo)
-    return "Descrição do aparelho muito longa.";
-  return null;
 }
 
 // ─── E-mail ────────────────────────────────────────────────────────────────────
@@ -125,8 +181,7 @@ function escapeHtml(value: string): string {
 
 /** Linha única, sem quebras, para cabeçalhos como o assunto. */
 function oneLine(value: string, max: number): string {
-  const flat = value.replace(/\s+/g, " ").trim();
-  return flat.length > max ? `${flat.slice(0, max - 1)}…` : flat;
+  return truncateCodePoints(value.replace(/\s+/g, " ").trim(), max);
 }
 
 function field(label: string, valueHtml: string, accentColor: string): string {
@@ -202,25 +257,38 @@ function buildHtml(data: FeedbackBody, resumo: string): string {
 // ─── Handler ───────────────────────────────────────────────────────────────────
 
 export async function POST(req: NextRequest) {
+  const body = await readBodyCapped(req);
+  if (body.ok === false) {
+    return NextResponse.json(
+      { error: body.status === 413 ? TOO_LARGE_MSG : INVALID_BODY_MSG },
+      { status: body.status }
+    );
+  }
+
   let raw: unknown;
   try {
-    raw = await req.json();
+    raw = JSON.parse(body.text);
   } catch {
-    return NextResponse.json({ error: "Corpo da requisição inválido." }, { status: 400 });
+    return NextResponse.json({ error: INVALID_BODY_MSG }, { status: 400 });
   }
-  if (!raw || typeof raw !== "object") {
-    return NextResponse.json({ error: "Corpo da requisição inválido." }, { status: 400 });
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) {
+    return NextResponse.json({ error: INVALID_BODY_MSG }, { status: 400 });
   }
 
   const data = normalize(raw as Record<string, unknown>);
 
-  // Robô preencheu o honeypot: responde como sucesso e descarta.
-  if (data.website) return NextResponse.json({ ok: true }, { status: 200 });
+  // Robô preencheu o honeypot: responde como sucesso e descarta (com aviso no log,
+  // caso algum navegador esteja preenchendo o campo sozinho).
+  if (data.armadilha) {
+    console.warn("[DOMUS Suporte] Mensagem descartada: campo-armadilha preenchido.");
+    return NextResponse.json({ ok: true }, { status: 200 });
+  }
 
-  const error = validate(data);
+  const error = validateFeedback(data);
   if (error) return NextResponse.json({ error }, { status: 422 });
 
-  if (rateLimited(clientIp(req))) {
+  const ip = clientIp(req);
+  if (ip && rateLimited(ip)) {
     return NextResponse.json(
       { error: "Muitas mensagens em pouco tempo. Aguarde alguns minutos e tente de novo." },
       { status: 429 }
@@ -244,11 +312,13 @@ export async function POST(req: NextRequest) {
   const tag = data.tipo.toUpperCase();
   const resumo = oneLine(data.mensagem, 70);
 
+  if (ip) inFlight.set(ip, (inFlight.get(ip) ?? 0) + 1);
   try {
     await transporter.sendMail({
       from: `"DOMUS Suporte" <${SMTP_USER}>`,
       to: recipient,
-      replyTo: data.email,
+      // Só o endereço, nunca nome de exibição: o e-mail já foi validado sem `<>,;:"`.
+      replyTo: { name: "", address: data.email },
       subject: `[DOMUS Suporte][${tag}] ${resumo}`,
       html: buildHtml(data, resumo),
       text: [
@@ -272,7 +342,14 @@ export async function POST(req: NextRequest) {
       { error: "Não foi possível enviar sua mensagem agora. Tente novamente mais tarde." },
       { status: 502 }
     );
+  } finally {
+    if (ip) {
+      const n = (inFlight.get(ip) ?? 1) - 1;
+      if (n > 0) inFlight.set(ip, n);
+      else inFlight.delete(ip);
+    }
   }
 
+  if (ip) recordHit(ip);
   return NextResponse.json({ ok: true }, { status: 200 });
 }
